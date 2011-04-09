@@ -17,9 +17,12 @@ class auth:
 
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
-		accReponse = f.read()
+		accResponse = f.read()
 		accDict = json.loads(accResponse)
-		accToken = accDist["access_token"]
-		return accToken 
+		accToken = accDict.get("access_token")
+		if accToken == None:
+			return "ID 10 T error"
+		else:
+			return "Congrats - you logged in"
 
 

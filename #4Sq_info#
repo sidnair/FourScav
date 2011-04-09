@@ -1,0 +1,18 @@
+Client ID:
+DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00
+
+Client Secret:
+MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE
+
+Authorize URL:
+https://foursquare.com/oauth2/authorize
+
+Access Token URL:
+https://foursquare.com/oauth2/access_token
+
+Callback URL:
+localhost
+
+Redirect People to:
+https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=localhost/4Sqav
+

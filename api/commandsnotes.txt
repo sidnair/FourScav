@@ -1,0 +1,2 @@
+https://api.foursquare.com/v2/users/USER_ID/venuehistory afterTimestamp for where they have been
+

@@ -7,7 +7,7 @@ urls = (
 app = web.application(urls, locals())
 
 if __name__ == '__main__':
-    app.run()
+	app.run()
 
 class auth:
 	def GET(self):

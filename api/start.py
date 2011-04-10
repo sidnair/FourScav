@@ -3,6 +3,7 @@ from web.session import Session, DiskStore
 import urllib
 import json
 from models import User
+from models import Place
 
 web.config.debug = False
 
@@ -24,7 +25,7 @@ session = web.session.Session(app, DiskStore('../sessions'))
 class auth:
 	def GET(self):
 		params = urllib.urlencode({'client_id' : 'DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00', 'client_secret' : 'MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE', 'grant_type' : 'authorization_code', 'redirect_uri' : 'http://localhost:8080/auth/', 'code' : web.input().code })
-
+		
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
@@ -40,20 +41,22 @@ class auth:
 			userData = json.loads(userDataStr)['response']
 			fullname = userData.get('firstname')+' '+userData.get('lastname')
 			print(userDataStr)
-			user = User(fullname=fullname, token=accToken, user_id=userData['id']
+			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 			return "Congrats - you logged in as "+fullname
 
 class new:
 	def POST(self):
-		web.input()['start']
+		lst_start = web.input()['start']
 		#set start time
-		web.input()['places']
-		web.input()['tags']
+		lst_places = web.input()['places']
+		lst_tags = web.input()['tags']
 		#add places/tags
-		web.input()['end time']
+		lst_end = web.input()['end']
 		#set end time
-		web.input()['creator']
+		lst_creator = web.input()['creator']
 		#add a "creator"
+
+		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
 		#return new list id
 		pass
 
@@ -71,6 +74,7 @@ class add_place:
 		accDesc = accDict.get("description")
 		accTags = accDict.get("tags")
 
+		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
 		#database magic
 		pass
 
@@ -96,8 +100,8 @@ class join:
 
 class get_list:
 	def POST(self,list_id,fsq_id):
+		#database magic
 		pass
 
 if __name__ == '__main__':
 	app.run()
-

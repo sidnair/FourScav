@@ -28,6 +28,9 @@ app = web.application(urls, locals())
 
 session = web.session.Session(app, DiskStore('../sessions'))
 
+def get_current_user():
+	return User.find_one({'token', session.token})
+
 class auth:
 	def GET(self):
 		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData.clientSecret, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.oauthCallbackURL , 'code' : web.input().code })
@@ -107,12 +110,21 @@ class remove_tag:
 
 class join:
 	def POST(self,list_id):
-		
-		pass
+		user = get_current_user()
+		hunt = Hunt.find_one({'_id':list_id})
+		hunt.users.append(user._id)
+		hunt.save()
+		return "ok"
 
 class leave:
 	def POST(self, list_id):
-		pass
+		user = get_current_user()
+		hunt = Hunt.find_one({'_id':list_id})
+		hunt.users.remove(user._id)
+		if len(hunt.users) == 0:
+			hunt.delete()
+		else: hunt.save()
+		return "ok"
 
 class get_list:
 	def GET(self,list_id):
@@ -123,8 +135,8 @@ def
 
 class get_username:
 	def GET(self):
-			user = User.find_one({'token': session.token})
-			return user.fullname
+		user = get_current_user()
+		return user.fullname
 
 if __name__ == '__main__':
 	app.run()

@@ -75,7 +75,7 @@ class new:
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		return (expand_place(hunt.to_dict())
+		return (expand_place(hunt)
 
 class remove_place:
 	def POST(self,list_id,fsq_id):

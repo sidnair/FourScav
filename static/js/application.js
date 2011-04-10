@@ -55,14 +55,20 @@ fs.makeListDropDown = function(list) {
 }
 
 fs.loadListDisplay = function(listId) {
+  //it is an existing list
   if(fs.userLists[listId]) {
     $('#newListMaker').hide();
     $('#activeListTitle').html(fs.userLists[listId].name);
     $('#activeListDescription').html(fs.userLists[listId].desc);
     $('#activeListInfo').show();
+    $('#search').hide();
+    $('#standings').show();
   } else {
+    //it is a new list
     $('#activeListInfo').hide();
     $('#newListMaker').show();
+    $('#standings').hide();
+    $('#search').show();
   }
 }
 
@@ -154,7 +160,8 @@ fs.loadMaps = function() {
     fs.userLocation.lat = fs.NEW_YORK_LAT;
     fs.userLocation.lng = fs.NEW_YORK_LNG;
   }
-}; 
+};
+
 fs.loadFirstList = function() {
   fs.loadListDisplay($('#listChoice option')[0].id);
 };
@@ -169,7 +176,7 @@ fs.searchVenue = function(query) {
       lat:fs.userLocation.lat,
       'long':fs.userLocation.lng
   }, function(data, textStatus, jqXHR) {
-  console.log($.parseJSON(data));
+    //console.log($.parseJSON(data));
     var agg_results = [];
     var k = 0;
     var result = $.parseJSON(data);
@@ -214,7 +221,7 @@ icons: {primary:'ui-icon-plusthick'},
     (function() {
       var clickF = (function(resultDiv) {
           return function() {
-            fs.addResult(resultDiv);
+            fs.addResult(resultDiv, result.id + 'Button');
           };
       })(resultDiv);
       addButton.click(function() {
@@ -224,24 +231,21 @@ icons: {primary:'ui-icon-plusthick'},
   }
 }
 
-fs.addResult = function(resultNode) {
+fs.addResult = function(resultNode, oldId) {
   var clonedNode = resultNode.clone();
   $('#newListTable').append(clonedNode);
-  var oldAdd = $($('td', clonedNode)[0])
-  var oldId = oldAdd.id;
-  console.log(oldId);
-  oldAdd.remove();
-  var removeButton = $('<td><span id="' + oldId + '" class="searchButton"></span></td>');
-  resultNode.prepend(removeButton);
-  $('#' + result.id + 'Button').button({
-      icons: {primary:'ui-icon', secondary:'ui-icon-plusthick'},
-      text: false
-  });
-  removeButton.click(function() {
-      $(this).remove();
-  });
-  //change icon to remove
-  //clone the result node (row) and paste it
+  $($('td', clonedNode)[0]).remove();
+  (function() {
+    var removeButton = $('<td><span id="' + oldId + 'Remove" class="searchButton"></span></td>');
+    clonedNode.prepend(removeButton);
+    removeButton.button({
+        icons: {primary:'ui-icon-minusthick'},
+        text: false
+    });
+    removeButton.click(function() {
+        clonedNode.remove();
+    });
+  })();
 }
 
 fs.addSearchEvents = function() {

@@ -162,3 +162,13 @@ button {
 .searchButton {
   padding-right:5px;
 }
+
+#standings h1, #search h1 {
+  font-size: 25px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 100px;
+  /* foursquare color */
+  color: #00c0de;
+  padding-bottom: 10px;
+}

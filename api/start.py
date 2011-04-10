@@ -4,6 +4,7 @@ import urllib
 import json
 from models import User
 from models import Place
+import connection
 
 web.config.debug = False
 
@@ -39,9 +40,10 @@ class auth:
 			f = urllib.urlopen(usernameUrl)
 			userDataStr = f.read()
 			userData = json.loads(userDataStr)['response']
-			fullname = userData.get('firstname')+' '+userData.get('lastname')
+			fullname = userData.get('firstName')+' '+userData.get('lastName')
 			print(userDataStr)
 			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
+			user.save()
 			return "Congrats - you logged in as "+fullname
 
 class new:

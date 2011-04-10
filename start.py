@@ -90,7 +90,12 @@ class add_place:
 
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
+
+		print accResponse
+
 		accDict = json.loads(accResponse)
+
+
 
 		user = get_current_user()  #of type user
 
@@ -106,9 +111,15 @@ class add_place:
 #		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/links/" #oauth token
 
 #		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/tips/" #oauth token
+		
+		hunt=Hunt.find({'_id' : list_id})
+		
 
 		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
+		hunt.places.append(place)
+		hunt.save()
 		place.save()
+		return json.dump({"success":True})
 
 
 class remove_place:

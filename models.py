@@ -20,6 +20,8 @@ class Place(Document):
 	links = ListField()
 
 class Hunt(Document):
+	name = StringField()
+	desc = StringField()
 	creator = StringField()
 	places = ListField()
 	tags = ListField()

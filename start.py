@@ -2,8 +2,7 @@ import web
 from web.session import Session, DiskStore
 import urllib
 import json
-from models import User
-from models import Place
+from models import *
 import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
@@ -35,7 +34,7 @@ def get_current_user():
 class auth:
 	def GET(self):
 		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData.clientSecret, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.oauthCallbackURL , 'code' : web.input().code })
-
+		
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
 		print(hostname)
@@ -58,12 +57,12 @@ class auth:
 			if user==None:
 				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 				user.save()
-			return 'You are logged in as '+fullname
-			#raise web.seeother('/')
+			raise web.seeother('/static/main.html')
 
 class new:
 	def POST(self):
 		#set start time
+		print(web.input())
 		lst_start = int(web.input().get('start', time.time()))
 		lst_places = web.input()['places']
 		#add places/tags
@@ -75,8 +74,8 @@ class new:
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-
-		return expand_place(hunt.to_dict())
+		print(hunt)
+		return expand_hunt(hunt)
 
 class search:
 	def POST(self):

@@ -91,8 +91,8 @@ class join:
 
 class get_list:
 	def POST(self,list_id,fsq_id):
+		#database magic
 		pass
 
 if __name__ == '__main__':
 	app.run()
-

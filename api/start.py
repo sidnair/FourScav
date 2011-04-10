@@ -112,9 +112,8 @@ class leave:
 
 class get_list:
 	def GET(self,list_id):
-		user = User.find_one({'_id':list_id})
-		return json.dumps(user.to_dict())
-		
+		hunt = Hunt.find_one({'_id':list_id})
+		return expand_hunt(hunt)
 
 class get_username:
 	def GET(self):

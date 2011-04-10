@@ -187,6 +187,9 @@ class join:
 		hunt = Hunt.find_one({'_id':list_id})
 		hunt.users.append(user._id)
 		hunt.save()
+
+		user.active_lsts.append(hunt._id)
+		user.save()
 		return "ok"
 
 class leave:

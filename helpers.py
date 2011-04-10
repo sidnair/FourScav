@@ -18,7 +18,7 @@ def add_place(list_id, fsq_id):
 	
 def expand_hunt(hunt):
 	d = {}
-	d['creator'] = User.find_one({'_id':hunt.creator}).to_dict()
+	d['creator'] = clean_userdict(User.find_one({'_id':hunt.creator}).to_dict())
 	d['places'] = []
 	for pid in hunt.places:
 		place = Place.find_one({'_id':pid})
@@ -31,15 +31,20 @@ def expand_hunt(hunt):
 		user = User.find_one({'_id':uid})
 		if user != None:
 			user = user.to_dict()
+			user = clean_userdict(user)
 			d['users'].append(user)
-	winner = User.find_one({'_id' : hunt.winner})
-	d.winner=''
-	if winner != None:
-		d['winner'] = winner.to_dict()
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
 	d['_id'] = str(hunt._id)
+	print(str(d))
 	return json.dumps(d)
+
+def clean_userdict(userdict):
+	for i, hid in enumerate(userdict['active_lsts']):
+		userdict['active_lsts'][i] = str(hid)
+	for i, hid in enumerate(userdict['dead_lsts']):
+		userdict['dead_lsts'][i] = str(hid)
+	return userdict
 
 def remove_place(list_id, fsq_id):
 	hunt = Hunt.find_one({'_id' : list_id})

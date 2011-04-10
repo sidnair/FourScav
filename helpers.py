@@ -32,10 +32,6 @@ def expand_hunt(hunt):
 		if user != None:
 			user = user.to_dict()
 			d['users'].append(user)
-	winner = User.find_one({'_id' : hunt.winner})
-	d.winner=''
-	if winner != None:
-		d['winner'] = winner.to_dict()
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
 	d['_id'] = str(hunt._id)

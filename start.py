@@ -106,8 +106,6 @@ class add_place:
 
 		accDict = json.loads(accResponse)
 
-
-
 		user = get_current_user()  #of type user
 
 		accName = accDict.get("name")
@@ -135,11 +133,12 @@ class add_place:
 
 class remove_place:
 	def POST(self,list_id,fsq_id):
-		#database magic
-		pass
-	
-
-
+		hunt = Hunt.find_one({'_id' : list_id})
+		place = Place.find_one({'fsq_id' : fsq_id})
+		hunt.places.remove(place._id)
+		hunt.save()
+		return json.dump({"success":True})
+		
 class add_tag:
 	def POST(self,list_id,fsq_id):
 		#database magic

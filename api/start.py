@@ -19,8 +19,11 @@ class auth:
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
 		accDict = json.loads(accResponse)
-		accToken = accDict["access_token"]
-		return accToken 
+		accToken = accDict.get("access_token")
+		if accToken == None:
+			return "ID 10 T error"
+		else:
+			return "Congrats - you logged in"
 
 class login:
 	def GET(self):

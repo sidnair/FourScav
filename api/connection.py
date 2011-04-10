@@ -1,4 +1,3 @@
-from pymongo import Connection
+from snakelegs import connect
 
-mongo = Connection('flame.mongohq.com', 27058)['4sqav']
-mongo.authenticate('4sqav', 'hacknyspring2011')
+connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')

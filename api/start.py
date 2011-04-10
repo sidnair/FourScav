@@ -4,6 +4,7 @@ import urllib
 import json
 from models import User
 from models import Place
+import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
 
@@ -137,4 +138,4 @@ def update(user_id):
 					#if winner, and winner is None, set him to winner
 					pass
 		#updates start time on all hunts
-	pass0-9a-f
+		#update start time w/ int(time.time())

@@ -75,7 +75,16 @@ class new:
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
+<<<<<<< HEAD
 		return expand_place(hunt.to_dict())
+=======
+		return (expand_place(hunt)
+
+class remove_place:
+	def POST(self,list_id,fsq_id):
+		#database magic
+		pass
+>>>>>>> 0761546f32bf85d2c1ff6b023940a9a0cb3d3bd2
 
 class add_tag:
 	def POST(self,list_id,fsq_id):

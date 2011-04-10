@@ -176,8 +176,12 @@ button {
 #searchResults tr {
   height:50px;
 }
-
 #newListTable tr {
   height:50px;
 }
+
+#activeListTable tr {
+  height:50px;
+}
+
 

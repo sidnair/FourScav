@@ -14,9 +14,25 @@ fs.NEW_YORK_LNG = -73.9514422416687;
 (function() {
   //DUMMMY DATA GENERATION
   list0 = {
-        name: 'foo',
+        name: 'Food',
         id: '023q4q',
-        desc: 'lorem ipsum'
+        desc: 'Cool food places of different genres',
+        places: [{
+          name:"Ice Cream Charlies",
+          lat:40.82535184,
+          lng:-74.10937132,
+          categories:[{icon: 'https://foursquare.com/img/categories/food/icecream.png', cat:'Ice Cream Shop'} ]
+        }, {
+          name:"Chipotle Mexican Grill",
+          lat: 40.742054,
+          lng: -74.001246,
+          categories:[{icon:' https://foursquare.com/img/categories/food/default.png', name:'burrito'}]
+        }, {
+          name:"Ippudo",
+          lat:40.730673519047336,
+          lng:-73.99092435836792,
+          categories:[{icon:'https://foursquare.com/img/categories/food/ramen.png', name:'Ramen or Noodle House'}]
+        }]
   };
 
   list1 = {
@@ -97,6 +113,10 @@ fs.loadListDisplay = function(listId) {
     $('#activeListDescription').html(fs.userLists[listId].desc);
     $('#activeListInfo').show();
     $('#searchAndStandings').hide();
+    $('#activeListTable').html('');
+    if(listId === '023q4q') {
+      fs.renderListPlaces(fs.userLists['023q4q'].places, fs.userLists['023q4q'])
+    }
     /*
     $('#search').hide();
     $('#standings').show();
@@ -242,10 +262,10 @@ fs.searchVenue = function(query) {
 fs.renderListPlaces = function(places, list) {
   $('#activeListTable').html('');
   fs.renderResults(places, $('#activeListTable'), true);
-  for(var i = 0, l = places.length; i < l; i++) {
-    fs.addMarker(places[i], places[i].lat, places[i].lng, places[i].name, places[i].desc);
+ // for(var i = 0, l = places.length; i < l; i++) {
+   // fs.addMarker(places[i], places[i].lat, places[i].lng, places[i].name, places[i].desc);
     //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
-  }
+//  }
 };
 
 fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
@@ -267,8 +287,8 @@ fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
       var name = cat.name;
       resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
     }
-    if(!shouldNotAdd) {
       resultListDiv.append(resultDiv);
+    if(!shouldNotAdd) {
       $('#' + result.id + 'Button').button({
   icons: {primary:'ui-icon-plusthick'},
         text: false
@@ -329,7 +349,6 @@ fs.addSubmitEvent = function() {
           tags:[],
           places:enteredPlaces
       };
-      console.log(obj);
       $.post('/list/new', obj, function(data, textStatus, jqXHR) {
           console.log(data);
          //on success, add stuff to list 

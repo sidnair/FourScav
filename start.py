@@ -67,19 +67,20 @@ class new:
 	def POST(self):
 		#set start time
 		print(web.input())
-		q = json.loads(web.input().q)
-		lst_start = int(q.get('start', time.time()))
-		lst_places = q['places']
+		#name, desc, tags (defaults to an empty array), places
+		lst_start = web.input().start || time.time()
+		lst_desc = web.input().desc
+		lst_name = web.input().name
+		lst_places = web.input().places
 		#add places/tags
-		lst_tags = q['tags']
+		lst_tags = web.input().tags || []
 		#set end time
 		lst_end = int(q.get('end', -1))
 		#add a "creator"
 		lst_creator = get_current_user()
 		
 		print(lst_creator._id)
-		hunt = Hunt(name=q.get("name",""), desc=q.get("desc","0xFEEDFACE"), creator = lst_creator._id, places = lst_places, tags = lst_tags, 
-					start_time = lst_start, end_time = lst_end)
+		hunt = Hunt(name=lst_name, desc=lst_desc, creator = lst_creator._id, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
 		hunt.users.append(lst_creator._id)
 		hunt.save()
 		

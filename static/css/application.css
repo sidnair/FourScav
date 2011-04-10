@@ -5,37 +5,9 @@ body {
   font-family: Tahoma, Geneva, sans-serif;
 }
 
-#splashBody {
-  background-image:url('../images/screen.png');
+.clickable {
+  cursor:pointer;
 }
-
-.cover {
-  position: absolute;
-  height: 100%;
-  width:100%;
-  background-color: rgba(255, 255, 255, 0.6);
-  filter: Alpha(Opacity=60);
-}
-
-#splashHeader h1 {
-  font-size: 40px;
-  /* foursquare color */
-  color: #00c0de;
-  padding-bottom:35px;
-}
-
-#splashHeader h2 {
-  font-size: 30px;
-  color: #bae71c;
-  padding-bottom:35px;
-}
-
-#splashHeader h3 {
-  font-size: 22px;
-  /* foursquare color */
-  color: #00c0de;
-}
-
 .dropdown select {
   width: 200px;
 }
@@ -70,10 +42,8 @@ body {
   position: absolute;
 }
 
-#loginButton {
-  position: absolute;
-  right: 0px;
-  top: 0px;
+#loginButtonLink {
+  float:right;
 }
 
 #listBox {
@@ -111,11 +81,49 @@ body {
   width: 100%;
 }  
 
+.cover {
+  position: absolute;
+  height: 100%;
+  width:100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  filter: Alpha(Opacity=60);
+}
+
+#splashBody {
+  background-image:url('../images/screen.png');
+}
+
+#splashHeader h1 {
+  font-size: 40px;
+  /* foursquare color */
+  color: #00c0de;
+  padding-bottom:35px;
+}
+
+#splashHeader h2 {
+  font-size: 30px;
+  color: #bae71c;
+  padding-bottom:35px;
+}
+
+#splashHeader h3 {
+  font-size: 22px;
+  /* foursquare color */
+  color: #00c0de;
+}
+
+#splashText {
+  padding-top:30px;
+}
 
 /* overrides some default overlay settings */
 #splashHeader {
   bottom:80px;
   right:50px;
-  padding: 40px;
+  padding: 30px;
+  padding-top:10px;
   width:60%;
+}
+
+#loginButtonLink {
 }

@@ -115,6 +115,7 @@ fs.loadMaps = function() {
 
 
 $(document).ready(function() {
-  fs.makeListDropDown(fs.userLists);
-  fs.loadMaps();
+  $('#listChoice').selectmenu({style:'dropdown', maxHeight:350, width: 200});
+  //fs.makeListDropDown(fs.userLists);
+  //fs.loadMaps();
 });

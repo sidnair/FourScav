@@ -175,7 +175,7 @@ def update(user_id):
 
 		#hunt_last_updated = hunt.get("startTime")
 		for usr in usrs:
-            cur_usr_dict = User.find({"user_id":usr}).to_dict()
+			cur_usr_dict = User.find({"user_id":usr}).to_dict()
 			tmp_id = cur_usr_dict['user_id']
 			tmp_oauth = cur_usr_dict['token']
 			hostname = "https://api.foursquare.com/v2/users/" + tmp + "/venuehistory?" + "?afterTimestamp= " + hunt_last_updated + "&oauth_token="+tmp_oauth
@@ -200,7 +200,7 @@ def update(user_id):
 								if not cur_active[x][1][y][1]:
 									winner = False
 
-							if winner && not hunt.winner:
+							if winner and not hunt.winner:
 								hunt.winner = cur_usr_dict['user_id']
 
 							usr.active_lsts = cur_active

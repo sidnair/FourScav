@@ -110,8 +110,8 @@ class new:
 		lst_creator = get_current_user()
 		
 		print(lst_creator._id)
-		hunt = Hunt(name=lst_name, desc=lst_desc, creator = lst_creator._id, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
-		hunt.users.append(lst_creator._id)
+		hunt = Hunt(name=lst_name, desc=lst_desc, creator = lst_creator._id, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end, users = [lst_creator._id])
+#		hunt.users.append(lst_creator._id)
 		hunt.save()
 		
 		lst_creator.active_lsts.append(str(hunt._id))

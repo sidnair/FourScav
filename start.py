@@ -74,12 +74,17 @@ class new:
 		#set end time
 		lst_end = int(q.get('end', -1))
 		#add a "creator"
-		lst_creator = get_current_user()._id
-		print(lst_creator)
-		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
+		lst_creator = get_current_user()
+		
+		print(lst_creator._id)
+		hunt = Hunt(creator = lst_creator._id, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
-		hunt.users.append(lst_creator)
+		hunt.users.append(lst_creator._id)
 		hunt.save()
+		
+		lst_creator.active_lsts.append(hunt._id)
+		lst_creator.save()
+
 		print(hunt)
 		return expand_hunt(hunt)
 

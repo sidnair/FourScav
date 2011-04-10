@@ -77,7 +77,7 @@ class new:
 		lst_creator = get_current_user()
 		
 		print(lst_creator._id)
-		hunt = Hunt(creator = lst_creator._id, places = lst_places, tags = lst_tags, 
+		hunt = Hunt(name=q.get("name",""), desc=q.get("desc","0xFEEDFACE"), creator = lst_creator._id, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.users.append(lst_creator._id)
 		hunt.save()

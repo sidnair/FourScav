@@ -36,6 +36,8 @@ def expand_hunt(hunt):
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
 	d['_id'] = str(hunt._id)
+	d['name'] = hunt.name
+	d['desc'] = hunt.desc
 	print(str(d))
 	return json.dumps(d)
 

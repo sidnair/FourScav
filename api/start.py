@@ -118,6 +118,11 @@ class get_list:
 		user = User.find_one({'_id':list_id})
 		return json.dumps(user.to_dict())
 
+class get_username:
+	def GET(self):
+			user = User.find_one({'token': session.token})
+			return user
+
 if __name__ == '__main__':
 	app.run()
 

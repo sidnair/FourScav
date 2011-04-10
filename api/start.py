@@ -1,12 +1,16 @@
 import web
+from web.session import Session, DiskStore
 import urllib
 import json
+from models import User
 
 urls = (
 	'/auth/', 'auth'
 )
 
 app = web.application(urls, locals())
+
+session = web.session.Session(app, Diskstore('../sessions'))
 
 if __name__ == '__main__':
 	app.run()
@@ -23,6 +27,7 @@ class auth:
 		if accToken == None:
 			return "ID 10 T error"
 		else:
+			session.token = accToken
 			return "Congrats - you logged in"
 
 

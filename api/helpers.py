@@ -13,4 +13,5 @@ def add_place(list_id, fsq_id):
 					geo_long = accLong)
 	place.save()
 	
-def expand_place():
+def expand_place(place):
+	d 

@@ -1,15 +1,3 @@
-import web
-import urllib
-import json
-
-urls = (
-	'/auth/', 'auth'
-)
-
-app = web.application(urls, locals())
-
-if __name__ == '__main__':
-	app.run()
 
 class auth:
 	def GET(self):
@@ -21,7 +9,3 @@ class auth:
 		accDict = json.loads(accResponse)
 		accToken = accDict["access_token"]
 		return accToken 
-
-class login:
-	def GET(self):
-		return "<a href=""></a>"

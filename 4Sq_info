@@ -14,7 +14,7 @@ Callback URL:
 localhost
 
 Redirect People to:
-https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost/auth
+https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost:8080/auth/
 
 Make the request to 4sq:
 https://foursquare.com/oauth2/access_token?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&client_secret=MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE&grant_type=authorization_code&redirect_uri=http://localhost/acess_token/&code=CODE
@@ -24,3 +24,6 @@ GWSM44NUAIR13JUZ5RNFKXDRZOTWPMQOMWQHPH3KBQOLQ5BM
 
 OAUTH token
 RCYJNPVTLNUHXMXHRVEKWHZSDUZGOTG04RCXFYUDPRJWZRAU
+
+Another oauthtoken:
+UHJCYE3KICN10HAFF0BOAOOLK5NAQPBHAVEOBTY4PUB5F0PQ

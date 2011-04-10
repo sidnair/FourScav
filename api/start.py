@@ -3,7 +3,14 @@ import urllib
 import json
 
 urls = (
-	'/auth/', 'auth'
+	'/auth/', 'auth',
+	'/list/new', 'new',
+	'/list/([^/]+)/add_place/(.+)', 'add_place',
+	'/list/([^/]+)/remove_place/(.+)', 'remove_place',
+	'/list/([^/]+)/add_tag/(.+)', 'add_tag',
+	'/list/([^/]+)/remove_tag/(.+)', 'remove_tag',
+	'/list/([^/]+)/join', 'join',
+	'/list/([^/]+)', 'get_list'
 )
 
 app = web.application(urls, locals())
@@ -28,3 +35,41 @@ class auth:
 class login:
 	def GET(self):
 		return "<a href=""></a>"
+
+class new:
+	def POST(self):
+		web.input()['start']
+		#set start time
+		web.input()['places']
+		web.input()['tags']
+		#add places/tags
+		web.input()['end time']
+		#set end time
+		web.input()['creator']
+		#add a "creator"
+		#return new list id
+		pass
+
+class add_place:
+	def POST(self):
+		pass
+
+class remove_place:
+	def POST(self):
+		pass
+
+class add_tag:
+	def POST(self):
+		pass
+
+class remove_tag:
+	def POST(self):
+		pass
+
+class join:
+	def POST(self):
+		pass
+
+class get_list:
+	def POST(self):
+		pass

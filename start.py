@@ -2,7 +2,7 @@ import web
 from web.session import Session, DiskStore
 import urllib
 import json
-from models import User
+nfrom models import User
 from models import Place
 import time
 from snakelegs import connect
@@ -11,7 +11,7 @@ from helpers import *
 
 web.config.debug = False
 
-connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')
+connect('4sqav')
 
 urls = (
 	'/auth/', 'auth',
@@ -35,7 +35,7 @@ def get_current_user():
 class auth:
 	def GET(self):
 		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData.clientSecret, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.oauthCallbackURL , 'code' : web.input().code })
-		
+
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
 		print(hostname)
@@ -75,7 +75,49 @@ class new:
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
+
 		return expand_place(hunt.to_dict())
+
+class search:
+	def POST(self):
+		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query
+		return urllib.urlopen(hostname)
+		
+
+class add_place:
+	def POST(self,list_id,fsq_id):
+		oauth = None
+		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth #oauth token
+
+		f = urllib.urlopen(hostname)
+		accResponse = f.read()
+		accDict = json.loads(accResponse)
+
+		user = get_current_user()  #of type user
+
+		accName = accDict.get("name")
+		accLat = accDict.get("location").get("lat")
+		accLong = accDict.get("location").get("long")
+		accDesc = accDict.get("description")
+		accTags = accDict.get("tags")
+
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/photos/" #oauth token
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/links/" #oauth token
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/tips/" #oauth token
+
+		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
+		place.save()
+
+
+class remove_place:
+	def POST(self,list_id,fsq_id):
+		#database magic
+		pass
+	
+
 
 class add_tag:
 	def POST(self,list_id,fsq_id):
@@ -110,6 +152,7 @@ class get_list:
 		hunt = Hunt.find_one({'_id':list_id})
 		return expand_hunt(hunt)
 
+
 class get_username:
 	def GET(self):
 		user = get_current_user()
@@ -120,26 +163,50 @@ if __name__ == '__main__':
 
 def update(user_id):
 	#database gets list of hunts from user_id
+	cur_usr = User.find_one({"user_id":user_id})
+	usr_dict = cur_usr.to_dict()
+	hunts = usr_dict['active_lsts']
+
 	for hunt in hunts:
-		pass
+		hunt_dict = Hunt.find({"_id" : hunt[0]}).to_dict()
+		usrs = hunt_dict['users']
 	#gets all users on hunt
 	#gets all location on hunt, puts them in dicty
 
 		#hunt_last_updated = hunt.get("startTime")
 		for usr in usrs:
-		#tmp_id = usr.get_id()
-		#tmp_oauth = usr.get_token()
+			cur_usr_dict = User.find({"user_id",usr}).to_dict()
+			tmp_id = cur_usr_dict['user_id']
+			tmp_oauth = cur_usr_dict['token']
 			hostname = "https://api.foursquare.com/v2/users/" + tmp + "/venuehistory?" + "?afterTimestamp= " + hunt_last_updated + "&oauth_token="+tmp_oauth
 			f = urllib.urlopen(hostname)
 			accResponse = f.read()
 			accDict = json.loads(accResponse)
-		#lst = accDict['response']['venues']['items']
+			venues = accDict['response']['venues']['items']
 
-			for elt in lst:
+			for elt in venues:
 				if elt["venue"]["id"] in dicty:
 					#set list of places where he needs to go to show he has been there
-					#check if winner
-					#if winner, and winner is None, set him to winner
-					pass
+
+					cur_active = cur_usr_dict['active_lsts']
+					for x in range(len(cur_active)):
+						
+						if hunt_dict['_id']==cur_active[x][0]:
+							winner = True
+							for y in range(len(cur_active[x][1])):
+								
+								if elt["venue"]["id"] == cur_active[x][1][y][0]:
+									cur_active[x][1][y] == cur_active[x][1][y][0],True
+								if not cur_active[x][1][y][1]:
+									winner = False
+
+							if winner && not hunt.winner:
+								hunt.winner = cur_usr_dict['user_id']
+
+							usr.active_lsts = cur_active
+							usr.save()
+
+		hunt.start_time = int(time.time())
+		hunt.save()
 		#updates start time on all hunts
 		#update start time w/ int(time.time())

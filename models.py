@@ -15,6 +15,9 @@ class Place(Document):
 	geo_lat = DecimalField()
 	geo_long = DecimalField()
 	fsq_id = IntField()
+	tips = ListField()
+	photos = ListField()
+	links = ListField()
 
 class Hunt(Document):
 	creator = StringField()

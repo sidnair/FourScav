@@ -14,12 +14,12 @@ connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')
 urls = (
 	'/auth/', 'auth',
 	'/list/new', 'new',
-	'/list/([^/]+)/add_place/(.+)', 'add_place',
-	'/list/([^/]+)/remove_place/(.+)', 'remove_place',
-	'/list/([^/]+)/add_tag/(.+)', 'add_tag',
-	'/list/([^/]+)/remove_tag/(.+)', 'remove_tag',
-	'/list/([^/]+)/join', 'join',
-	'/list/([^/]+)', 'get_list'
+	'/list/([0-9a-f]+)/add_place/(.+)', 'add_place',
+	'/list/([0-9a-f]+)/remove_place/(.+)', 'remove_place',
+	'/list/([0-9a-f]+)/add_tag/(.+)', 'add_tag',
+	'/list/([0-9a-f]+)/remove_tag/(.+)', 'remove_tag',
+	'/list/([0-9a-f]+)/join', 'join',
+	'/list/([0-9a-f]+)', 'get_list'
 )
 
 app = web.application(urls, locals())
@@ -137,4 +137,4 @@ def update(user_id):
 					#if winner, and winner is None, set him to winner
 					pass
 		#updates start time on all hunts
-	pass
+	pass0-9a-f

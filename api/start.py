@@ -39,7 +39,8 @@ class auth:
 		print(accResponse)
 		accToken = accDict.get("access_token")
 		if accToken == None:
-			return "ID 10 T error"
+			return """<!--ID10T,--> There was a problem authenticating, please go back to the 
+					front page and try again"""
 		else:
 			session.token = accToken
 			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
@@ -50,20 +51,20 @@ class auth:
 			print(userDataStr)
 			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 			user.save()
-			return "Congrats - you logged in as "+fullname
+			return 'You are logged in as '+fullname
+			#raise web.seeother('/')
 
 class new:
 	def POST(self):
-		lst_start = web.input()['start']
 		#set start time
+		lst_start = web.input()['start']
 		lst_places = web.input()['places']
-		lst_tags = web.input()['tags']
 		#add places/tags
-		lst_end = web.input()['end']
+		lst_tags = web.input()['tags']
 		#set end time
-		lst_creator = web.input()['creator']
+		lst_end = web.input()['end']
 		#add a "creator"
-
+		lst_creator = web.input()['creator']
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
 		hunt.save()
 		
@@ -73,7 +74,6 @@ class add_place:
 	def POST(self,list_id,fsq_id):
 		oauth = None
 		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth #oauth token
-
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
 		accDict = json.loads(accResponse)
@@ -82,10 +82,9 @@ class add_place:
 		accLong = accDict.get("location").get("long")
 		accDesc = accDict.get("description")
 		accTags = accDict.get("tags")
-
-		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
+		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, 
+						geo_long = accLong)
 		place.save()
-		#database magic
 		pass
 
 class remove_place:
@@ -109,9 +108,9 @@ class join:
 		pass
 
 class get_list:
-	def POST(self,list_id,fsq_id):
-		#database magic
-		pass
+	def GET(self,list_id):
+		user = User.find_one({'_id':list_id})
+		return json.dumps(user.to_dict())
 
 if __name__ == '__main__':
 	app.run()

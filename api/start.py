@@ -34,9 +34,14 @@ class auth:
 			return "ID 10 T error"
 		else:
 			session.token = accToken
-			f = urllib.urlopen('https://api.foursquare.com/v2/users/self')
-			print(f.read())
-			return "Congrats - you logged in"
+			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
+			f = urllib.urlopen(usernameUrl)
+			userDataStr = f.read()
+			userData = json.loads(userDataStr)['response']
+			fullname = userData.get('firstname')+' '+userData.get('lastname')
+			print(userDataStr)
+			user = User(fullname=fullname, token=accToken, user_id=userData['id']
+			return "Congrats - you logged in as "+fullname
 
 class new:
 	def POST(self):

@@ -3,8 +3,9 @@ from snakelegs.fields import *
 import connection
 
 class User(Document):
-	username = StringField()
+	fullname = StringField()
 	token = StringField()
+	user_id = IntField()
 	active_lsts = ListField()
 	dead_lsts = ListField()
 	

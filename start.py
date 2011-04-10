@@ -22,7 +22,8 @@ urls = (
 	'/list/([0-9a-f]+)/join', 'join',
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
-	'/venues/search', 'search',
+	'/user/lists', 'user_lists',
+	'/venues/search', 'venue_search'
 )
 
 app = web.application(urls, locals())
@@ -73,12 +74,17 @@ class new:
 		#set end time
 		lst_end = int(q.get('end', -1))
 		#add a "creator"
-		lst_creator = get_current_user()._id
-		print(lst_creator)
-		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
+		lst_creator = get_current_user()
+		
+		print(lst_creator._id)
+		hunt = Hunt(creator = lst_creator._id, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
-		hunt.users.append(lst_creator)
+		hunt.users.append(lst_creator._id)
 		hunt.save()
+		
+		lst_creator.active_lsts.append(hunt._id)
+		lst_creator.save()
+
 		print(hunt)
 		return expand_hunt(hunt)
 
@@ -167,14 +173,21 @@ class get_list:
 		hunt = Hunt.find_one({'_id':list_id})
 		return expand_hunt(hunt)
 
+class user_lists:
+	def GET(self, user_id, inactive=False):
+		user = get_current_user()
+		hunts = []
+		for hid in user.active_lsts:
+			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
+		if inactive:
+			for hid in user.inactive_lsts:
+				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
+		return json.dumps(hunts)
 
 class get_username:
 	def GET(self):
 		user = get_current_user()
 		return user.fullname
-
-if __name__ == '__main__':
-	app.run()
 
 def update(user_id):
 	#database gets list of hunts from user_id
@@ -225,3 +238,7 @@ def update(user_id):
 		hunt.save()
 		#updates start time on all hunts
 		#update start time w/ int(time.time())
+		
+if __name__ == '__main__':
+	app.run()
+

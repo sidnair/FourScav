@@ -93,7 +93,7 @@ class new:
 			lst_places = store['places[]']
 		else:
 			lst_places = []
-    print lst_places
+		print lst_places
 		#add places/tags
 
 		lst_tags = -1

@@ -170,7 +170,7 @@ class leave:
 class get_list:
 	def GET(self,list_id):
 		hunt = Hunt.find_one({'_id':list_id})
-		return expand_hunt(hunt)
+		return json.dumps(expand_hunt(hunt))
 
 class user_lists:
 	def GET(self, inactive=False):

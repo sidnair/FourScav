@@ -39,7 +39,7 @@ def expand_hunt(hunt):
 	d['name'] = hunt.name
 	d['desc'] = hunt.desc
 	print(str(d))
-	return json.dumps(d)
+	return d
 
 def clean_userdict(userdict):
 	for i, hid in enumerate(userdict['active_lsts']):

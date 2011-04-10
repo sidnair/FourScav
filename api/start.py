@@ -30,7 +30,7 @@ app = web.application(urls, locals())
 session = web.session.Session(app, DiskStore('../sessions'))
 
 def get_current_user():
-	return User.find_one({'token', session.token})
+	return User.find_one({'token': session.token})
 
 class auth:
 	def GET(self):
@@ -75,12 +75,7 @@ class new:
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		return (expand_place(hunt.to_dict())
-
-class remove_place:
-	def POST(self,list_id,fsq_id):
-		#database magic
-		pass
+		return expand_place(hunt.to_dict())
 
 class add_tag:
 	def POST(self,list_id,fsq_id):

@@ -33,7 +33,7 @@ def expand_hunt(hunt):
 	d['end_time'] = hunt.end_time
 	return json.dumps(d)
 
-def remove_place(list_id, fsq_id:
+def remove_place(list_id, fsq_id):
 	hunt = Hunt.find_one({'_id' : list_id})
 	place = Place.find_one({'fsqid' : fsq_id})
 	hunt.places.remove(place._id)

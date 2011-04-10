@@ -19,33 +19,37 @@ def add_place(list_id, fsq_id):
 def expand_hunt(hunt):
 	d = {}
 	d['creator'] = clean_userdict(User.find_one({'_id':hunt.creator}).to_dict())
+	d['creator']['user_id'] = d['creator']['user_id'].encode('ascii')
 	d['places'] = []
 	for pid in hunt.places:
 		place = Place.find_one({'_id':pid})
-		if place != None:
+		if place != -1:
 			place = place.to_dict()
 			d['places'].append(place)
 	d['tags'] = hunt.tags
 	d['users'] = []
 	for uid in hunt.users:
 		user = User.find_one({'_id':uid})
-		if user != None:
+		if user != -1:
 			user = user.to_dict()
 			user = clean_userdict(user)
+			user['user_id'] = user['user_id'].encode('ascii')
 			d['users'].append(user)
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
-	d['_id'] = str(hunt._id)
-	d['name'] = hunt.name
-	d['desc'] = hunt.desc
+	d['_id'] = str(hunt._id).encode('ascii')
+	d['name'] = hunt.name.encode('ascii')
+	d['desc'] = hunt.desc.encode('ascii')
 	print(str(d))
 	return d
 
 def clean_userdict(userdict):
+	userdict['fullname'] = userdict['fullname'].encode('ascii')
+	userdict['token'] = userdict['token'].encode('ascii')
 	for i, hid in enumerate(userdict['active_lsts']):
-		userdict['active_lsts'][i] = str(hid)
+		userdict['active_lsts'][i] = str(hid).encode('ascii')
 	for i, hid in enumerate(userdict['dead_lsts']):
-		userdict['dead_lsts'][i] = str(hid)
+		userdict['dead_lsts'][i] = str(hid).encode('ascii')
 	return userdict
 
 def remove_place(list_id, fsq_id):

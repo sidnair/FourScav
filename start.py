@@ -58,7 +58,7 @@ class auth:
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
 			user = User.find_one({'token':accToken})
-			if user==None:
+			if user==None:	
 				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 				user.save()
 			raise web.seeother('/static/main.html')
@@ -68,14 +68,38 @@ class new:
 		#set start time
 		print(web.input())
 		#name, desc, tags (defaults to an empty array), places
-		lst_start = web.input().start || time.time()
+		lst_start = -1
+		if hasattr(web.input(), "start"):
+			lst_start = web.input().start
+		else:
+			lst_start = time.time()
+
+#		lst_start = time.time()
 		lst_desc = web.input().desc
 		lst_name = web.input().name
-		lst_places = web.input().places
+
+		lst_places = -1
+		if hasattr(web.input(), "places"):
+			
+
+			lst_places = web.input().places
+		else:
+			lst_places = []
 		#add places/tags
-		lst_tags = web.input().tags || []
+
+		lst_tags = -1
+		if hasattr(web.input(), "tags"):
+			lst_tags = web.input().tags
+		else:
+			lst_tags = []
+
 		#set end time
-		lst_end = int(q.get('end', -1))
+		lst_end = -1
+		if hasattr(web.input(), "end"):
+			lst_end = web.input().end
+		else:
+			lst_end = -1
+
 		#add a "creator"
 		lst_creator = get_current_user()
 		

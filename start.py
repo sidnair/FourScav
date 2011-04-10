@@ -2,7 +2,7 @@ import web
 from web.session import Session, DiskStore
 import urllib
 import json
-nfrom models import User
+from models import User
 from models import Place
 import time
 from snakelegs import connect

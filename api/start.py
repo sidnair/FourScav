@@ -20,12 +20,16 @@ urls = (
 	'/list/([0-9a-f]+)/add_tag/(.+)', 'add_tag',
 	'/list/([0-9a-f]+)/remove_tag/(.+)', 'remove_tag',
 	'/list/([0-9a-f]+)/join', 'join',
-	'/list/([0-9a-f]+)', 'get_list'
+	'/list/([0-9a-f]+)', 'get_list',
+	'/user/name', 'get_username',
 )
 
 app = web.application(urls, locals())
 
 session = web.session.Session(app, DiskStore('../sessions'))
+
+def get_current_user():
+	return User.find_one({'token', session.token})
 
 class auth:
 	def GET(self):
@@ -49,26 +53,28 @@ class auth:
 			userData = json.loads(userDataStr)['response']['user']
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
-			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
-			user.save()
+			user = User.find_one({'token':accToken})
+			if user==None:
+				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
+				user.save()
 			return 'You are logged in as '+fullname
 			#raise web.seeother('/')
 
 class new:
 	def POST(self):
 		#set start time
-		lst_start = web.input()['start']
+		lst_start = int(web.input().get('start', time.time()))
 		lst_places = web.input()['places']
 		#add places/tags
 		lst_tags = web.input()['tags']
 		#set end time
-		lst_end = web.input()['end']
+		lst_end = int(web.input().get('end', -1))
 		#add a "creator"
 		lst_creator = web.input()['creator']
-		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
+		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
+					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		
-		return hunt._id
+		return json.dumps(hunt.to_dict())
 
 class search:
 	def POST(self):
@@ -119,13 +125,33 @@ class remove_tag:
 
 class join:
 	def POST(self,list_id):
-		#database magic
-		pass
+		user = get_current_user()
+		hunt = Hunt.find_one({'_id':list_id})
+		hunt.users.append(user._id)
+		hunt.save()
+		return "ok"
+
+class leave:
+	def POST(self, list_id):
+		user = get_current_user()
+		hunt = Hunt.find_one({'_id':list_id})
+		hunt.users.remove(user._id)
+		if len(hunt.users) == 0:
+			hunt.delete()
+		else: hunt.save()
+		return "ok"
 
 class get_list:
 	def GET(self,list_id):
 		user = User.find_one({'_id':list_id})
 		return json.dumps(user.to_dict())
+		
+def 
+
+class get_username:
+	def GET(self):
+		user = get_current_user()
+		return user.fullname
 
 if __name__ == '__main__':
 	app.run()

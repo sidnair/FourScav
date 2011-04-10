@@ -50,9 +50,10 @@ class auth:
 			userData = json.loads(userDataStr)['response']['user']
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
-			user = User.find_one()
-			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
-			user.save()
+			user = User.find_one({'token':accToken})
+			if user==None:
+				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
+				user.save()
 			return 'You are logged in as '+fullname
 			#raise web.seeother('/')
 
@@ -67,10 +68,10 @@ class new:
 		lst_end = int(web.input().get('end', -1))
 		#add a "creator"
 		lst_creator = web.input()['creator']
-		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
+		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
+					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		
-		return hunt._id
+		return json.dumps(hunt.to_dict())
 
 class add_place:
 	def POST(self,list_id,fsq_id):
@@ -117,6 +118,8 @@ class get_list:
 	def GET(self,list_id):
 		user = User.find_one({'_id':list_id})
 		return json.dumps(user.to_dict())
+		
+def 
 
 if __name__ == '__main__':
 	app.run()

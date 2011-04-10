@@ -112,7 +112,7 @@ class new:
 		lst_creator.save()
 
 		print(hunt)
-		return expand_hunt(hunt)
+		return json.dumps(expand_hunt(hunt))
 
 class venue_search:
 	def POST(self):

@@ -22,7 +22,7 @@ urls = (
 	'/list/([0-9a-f]+)/join', 'join',
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
-	'/user/lists', 'get_list',
+	'/user/lists', 'user_lists',
 )
 
 app = web.application(urls, locals())
@@ -156,6 +156,16 @@ class get_list:
 		hunt = Hunt.find_one({'_id':list_id})
 		return expand_hunt(hunt)
 
+class user_lists:
+	def GET(self, user_id, inactive=False):
+		user = get_current_user()
+		hunts = []
+		for hid in user.active_lsts:
+			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid}))))
+		if inactive:
+			for hid in user.inactive_lsts:
+				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid}))))		
+		return json.dumps(hunts)
 
 class get_username:
 	def GET(self):

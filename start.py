@@ -7,6 +7,7 @@ import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
 from helpers import *
+from pymongo.objectid import ObjectId
 
 web.config.debug = False
 
@@ -77,7 +78,7 @@ class new:
 		lst_creator = get_current_user()
 		
 		print(lst_creator._id)
-		hunt = Hunt(creator = lst_creator._id, places = lst_places, tags = lst_tags, 
+		hunt = Hunt(name=q.get("name",""), desc=q.get("desc","0xFEEDFACE"), creator = lst_creator._id, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.users.append(lst_creator._id)
 		hunt.save()
@@ -169,18 +170,24 @@ class leave:
 
 class get_list:
 	def GET(self,list_id):
-		hunt = Hunt.find_one({'_id':list_id})
-		return expand_hunt(hunt)
+		hunt = Hunt.find_one({'_id':ObjectId(list_id)})
+		if hunt:
+			return json.dumps(expand_hunt(hunt))
+		return json.dumps({'ok': False})
 
 class user_lists:
 	def GET(self, inactive=False):
 		user = get_current_user()
 		hunts = []
 		for hid in user.active_lsts:
-			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
+			hunt = Hunt.find_one({'_id': hid})
+			if hunt:
+				hunts.append(expand_hunt(hunt))
 		if inactive:
 			for hid in user.dead_lsts:
-				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
+				hunt = Hunt.find_one({'_id': hid})
+				if hunt:
+					hunts.append(expand_hunt(hunt))
 		return json.dumps(hunts)
 
 class get_username:

@@ -17,12 +17,6 @@ fs.NEW_YORK_LNG = -73.9514422416687;
         name: 'foo',
         id: '023q4q',
         desc: 'lorem ipsum'
-        places: [{
-          name:
-          desc:
-          lat:
-          lng:
-        },
   };
 
   list1 = {

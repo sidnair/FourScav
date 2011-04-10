@@ -72,6 +72,8 @@ class auth:
 class new:
 	def POST(self):
 		#set start time
+		print(web.data())
+		print('input')
 		print(web.input())
 		#name, desc, tags (defaults to an empty array), places
 		lst_start = -1
@@ -86,11 +88,10 @@ class new:
 
 		lst_places = -1
 		if hasattr(web.input(), "places"):
-			
-
 			lst_places = web.input().places
 		else:
 			lst_places = []
+    print lst_places
 		#add places/tags
 
 		lst_tags = -1

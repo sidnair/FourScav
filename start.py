@@ -26,7 +26,7 @@ urls = (
 
 app = web.application(urls, locals())
 
-session = web.session.Session(app, DiskStore('../sessions'))
+session = web.session.Session(app, DiskStore('./sessions/'))
 
 def get_current_user():
 	return User.find_one({'token': session.token})
@@ -47,6 +47,7 @@ class auth:
 					front page and try again"""
 		else:
 			session.token = accToken
+			print(session.token)
 			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
 			f = urllib.urlopen(usernameUrl)
 			userDataStr = f.read()
@@ -65,15 +66,17 @@ class new:
 		print(web.input())
 		q = json.loads(web.input().q)
 		lst_start = int(q.get('start', time.time()))
-		lst_places = string.split(q['places'])
+		lst_places = q['places']
 		#add places/tags
 		lst_tags = q['tags']
 		#set end time
 		lst_end = int(q.get('end', -1))
 		#add a "creator"
 		lst_creator = get_current_user()._id
+		print(lst_creator)
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
+		hunt.users.append(lst_creator)
 		hunt.save()
 		print(hunt)
 		return expand_hunt(hunt)

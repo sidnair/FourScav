@@ -21,7 +21,7 @@ def expand_hunt(hunt):
 	d['creator'] = User.find_one({'_id':hunt.creator}).to_dict()
 	d['places'] = []
 	for pid in hunt.places:
-		place = Place.find_one({'_id':pid})
+		place = Place.find_one({'_id':pid}).to_dict()
 		d['places'].append(place)
 	d['tags'] = hunt.tags
 	d['users'] = []
@@ -31,6 +31,7 @@ def expand_hunt(hunt):
 	d['winner'] = User.find_one({'_id':hunt.winner}).to_dict()
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
+	d['_id'] = str(hunt._id)
 	return json.dumps(d)
 
 def remove_place(list_id, fsq_id):

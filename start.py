@@ -7,6 +7,7 @@ from models import Place
 import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
+from helpers import *
 
 web.config.debug = False
 
@@ -29,7 +30,7 @@ app = web.application(urls, locals())
 session = web.session.Session(app, DiskStore('../sessions'))
 
 def get_current_user():
-	return User.find_one({'token', session.token})
+	return User.find_one({'token': session.token})
 
 class auth:
 	def GET(self):
@@ -70,11 +71,12 @@ class new:
 		#set end time
 		lst_end = int(web.input().get('end', -1))
 		#add a "creator"
-		lst_creator = web.input()['creator']
+		lst_creator = get_current_user()._id
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		return json.dumps(hunt.to_dict())
+
+		return expand_place(hunt.to_dict())
 
 class search:
 	def POST(self):
@@ -114,6 +116,8 @@ class remove_place:
 	def POST(self,list_id,fsq_id):
 		#database magic
 		pass
+	
+
 
 class add_tag:
 	def POST(self,list_id,fsq_id):
@@ -145,9 +149,9 @@ class leave:
 
 class get_list:
 	def GET(self,list_id):
-		user = User.find_one({'_id':list_id})
-		return json.dumps(user.to_dict())
-		
+		hunt = Hunt.find_one({'_id':list_id})
+		return expand_hunt(hunt)
+
 
 class get_username:
 	def GET(self):

@@ -182,12 +182,12 @@ class user_lists:
 		for hid in user.active_lsts:
 			hunt = Hunt.find_one({'_id': hid})
 			if hunt:
-				hunts.append(expand_hunt(hunt))
+				hunts.append(str(hunt._id))
 		if inactive:
 			for hid in user.dead_lsts:
 				hunt = Hunt.find_one({'_id': hid})
 				if hunt:
-					hunts.append(expand_hunt(hunt))
+					hunts.append(str(hunt._id))
 		return json.dumps(hunts)
 
 class get_username:

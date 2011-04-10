@@ -4,6 +4,7 @@ import urllib
 import json
 from models import User
 from models import Place
+import connection
 
 web.config.debug = False
 

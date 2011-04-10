@@ -1,6 +1,5 @@
 from snakelegs.document import Document
 from snakelegs.fields import *
-import connection
 
 class User(Document):
 	fullname = StringField()
@@ -13,8 +12,8 @@ class Place(Document):
 	name = StringField()
 	desc = StringField()
 	tags = ListField()
-	geo_lat = DoubleField()
-	geo_long = DoubleField()
+	geo_lat = DecimalField()
+	geo_long = DecimalField()
 
 class Hunt(Document):
 	creator = StringField()

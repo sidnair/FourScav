@@ -70,22 +70,37 @@ class new:
 		
 		return hunt._id
 
+class search:
+	def POST(self):
+		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query
+		return urllib.urlopen(hostname)
+		
+
 class add_place:
 	def POST(self,list_id,fsq_id):
 		oauth = None
 		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth #oauth token
+
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
 		accDict = json.loads(accResponse)
+
 		accName = accDict.get("name")
 		accLat = accDict.get("location").get("lat")
 		accLong = accDict.get("location").get("long")
 		accDesc = accDict.get("description")
 		accTags = accDict.get("tags")
-		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, 
-						geo_long = accLong)
+
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/photos/" #oauth token
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/links/" #oauth token
+
+#		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/tips/" #oauth token
+
+		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
 		place.save()
-		pass
+
 
 class remove_place:
 	def POST(self,list_id,fsq_id):
@@ -117,25 +132,35 @@ if __name__ == '__main__':
 
 def update(user_id):
 	#database gets list of hunts from user_id
-	for hunt in hunts:
+	cur_usr = User.find_one({"user_id":user_id})
+	usr_dict = cur_usr.to_dict()
+	hunts = usr_dict['active_lsts']
 
+	for hunt in hunts:
+		hunt_dict = hunt.to_dict()
+		usrs = hunt_dict['users']
 	#gets all users on hunt
 	#gets all location on hunt, puts them in dicty
 
 		#hunt_last_updated = hunt.get("startTime")
 		for usr in usrs:
-		#tmp_id = usr.get_id()
-		#tmp_oauth = usr.get_token()
+			cur_usr_dict = usr.to_dict()
+			tmp_id = cur_usr_dict['user_id']
+			tmp_oauth = cur_usr_dict['token']
 			hostname = "https://api.foursquare.com/v2/users/" + tmp + "/venuehistory?" + "?afterTimestamp= " + hunt_last_updated + "&oauth_token="+tmp_oauth
 			f = urllib.urlopen(hostname)
 			accResponse = f.read()
 			accDict = json.loads(accResponse)
-		#lst = accDict['response']['venues']['items']
+			lst = accDict['response']['venues']['items']
 
 			for elt in lst:
 				if elt["venue"]["id"] in dicty:
 					#set list of places where he needs to go to show he has been there
+
+					hunt_lsts = []
 					#check if winner
+					for :
+						hunt_lsts.append()
 					#if winner, and winner is None, set him to winner
 					pass
 		#updates start time on all hunts

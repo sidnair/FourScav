@@ -6,3 +6,5 @@ class User(Document):
 	username = StringField()
 	token = StringField()
 	
+class Place(Document):
+	pass

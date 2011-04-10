@@ -63,7 +63,7 @@ class auth:
 			userData = json.loads(userDataStr)['response']['user']
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
-			user = User.find_one({'token':accToken})
+			user = User.find_one({'token':str(accToken)})
 			if user==None:	
 				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 				user.save()

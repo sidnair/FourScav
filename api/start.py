@@ -5,9 +5,13 @@ import json
 from models import User
 from models import Place
 import connection
+import time
+from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
 
 web.config.debug = False
+
+connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')
 
 urls = (
 	'/auth/', 'auth',
@@ -135,4 +139,5 @@ def update(user_id):
 					#if winner, and winner is None, set him to winner
 					pass
 		#updates start time on all hunts
+		#update start time w/ int(time.time())
 	pass

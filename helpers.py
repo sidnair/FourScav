@@ -23,21 +23,21 @@ def expand_hunt(hunt):
 	d['places'] = []
 	for pid in hunt.places:
 		place = Place.find_one({'_id':pid})
-		if place != -1:
+		if place != None:
 			place = place.to_dict()
 			d['places'].append(place)
 	d['tags'] = hunt.tags
 	d['users'] = []
 	for uid in hunt.users:
 		user = User.find_one({'_id':uid})
-		if user != -1:
+		if user != None:
 			user = user.to_dict()
 			user = clean_userdict(user)
 			user['user_id'] = user['user_id'].encode('ascii')
 			d['users'].append(user)
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
-	if hunt._id!=[None]:
+	if hunt._id!=None:
 		d['_id'] = str(hunt._id).encode('ascii')
 	else:
 		d['_id'] = -1

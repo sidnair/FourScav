@@ -71,31 +71,31 @@ class auth:
 
 class new:
 	def POST(self):
+		store = web.input(**{'places[]':[], 'tags[]':[]})
 		#set start time
-		print(web.input())
+		print(store)
+		print web.data()
 		#name, desc, tags (defaults to an empty array), places
 		lst_start = -1
-		if hasattr(web.input(), "start"):
-			lst_start = web.input().start
+		if hasattr(store, "start"):
+			lst_start = store.start
 		else:
 			lst_start = time.time()
 
 #		lst_start = time.time()
-		lst_desc = web.input().desc
-		lst_name = web.input().name
+		lst_desc = store.desc
+		lst_name = store.name
 
 		lst_places = -1
-		if hasattr(web.input(), "places"):
-			
-
-			lst_places = web.input().places
+		if hasattr(store, "places[]"):
+			lst_places = store['places[]']
 		else:
 			lst_places = []
 		#add places/tags
 
 		lst_tags = -1
-		if hasattr(web.input(), "tags"):
-			lst_tags = web.input().tags
+		if hasattr(store, "tags[]"):
+			lst_tags = store['tags[]']
 		else:
 			lst_tags = []
 

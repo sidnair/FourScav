@@ -5,6 +5,7 @@ import json
 from models import User
 from models import Place
 import connection
+import time
 
 web.config.debug = False
 
@@ -134,4 +135,5 @@ def update(user_id):
 					#if winner, and winner is None, set him to winner
 					pass
 		#updates start time on all hunts
+		#update start time w/ int(time.time())
 	pass

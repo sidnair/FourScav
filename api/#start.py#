@@ -79,7 +79,6 @@ class remove_place:
 
 class add_tag:
 	def POST(self,list_id,fsq_id):
-		#database magic
 		pass
 
 class remove_tag:
@@ -93,5 +92,5 @@ class join:
 		pass
 
 class get_list:
-	def POST(self,list_id,fsq_id):
+	def POST(self,list_id,):
 		pass

@@ -4,9 +4,11 @@ import urllib
 import json
 from models import User
 from models import Place
-import connection
+from snakelegs import connect
 
 web.config.debug = False
+
+connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')
 
 urls = (
 	'/auth/', 'auth',

@@ -20,7 +20,8 @@ urls = (
 	'/list/([0-9a-f]+)/add_tag/(.+)', 'add_tag',
 	'/list/([0-9a-f]+)/remove_tag/(.+)', 'remove_tag',
 	'/list/([0-9a-f]+)/join', 'join',
-	'/list/([0-9a-f]+)', 'get_list'
+	'/list/([0-9a-f]+)', 'get_list',
+	'/user/name', 'get_username',
 )
 
 app = web.application(urls, locals())
@@ -49,6 +50,7 @@ class auth:
 			userData = json.loads(userDataStr)['response']['user']
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
+			user = User.find_one()
 			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 			user.save()
 			return 'You are logged in as '+fullname
@@ -57,12 +59,12 @@ class auth:
 class new:
 	def POST(self):
 		#set start time
-		lst_start = web.input()['start']
+		lst_start = int(web.input().get('start', time.time()))
 		lst_places = web.input()['places']
 		#add places/tags
 		lst_tags = web.input()['tags']
 		#set end time
-		lst_end = web.input()['end']
+		lst_end = int(web.input().get('end', -1))
 		#add a "creator"
 		lst_creator = web.input()['creator']
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
@@ -104,7 +106,11 @@ class remove_tag:
 
 class join:
 	def POST(self,list_id):
-		#database magic
+		
+		pass
+
+class leave:
+	def POST(self, list_id):
 		pass
 
 class get_list:

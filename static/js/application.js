@@ -17,6 +17,12 @@ fs.NEW_YORK_LNG = -73.9514422416687;
         name: 'foo',
         id: '023q4q',
         desc: 'lorem ipsum'
+        places: [{
+          name:
+          desc:
+          lat:
+          lng:
+        },
   };
 
   list1 = {
@@ -62,15 +68,15 @@ fs.clearMarkers = function() {
   //remove from fs.storedMarkers
 }
 
-fs.addMarker = function(map, lat, lng, data) {
+fs.addMarker = function(map, lat, lng, name, desc) {
   var loc = new google.maps.LatLng(lat, lng);
   var marker = new google.maps.Marker({
       position: loc, 
       map: map, 
-      title: data.name
+      title: name
   });
   var infoWindow = new google.maps.InfoWindow({ 
-    content: data.name + ' - ' + data.desc
+    content: name + ' - ' + desc
   }); 
   google.maps.event.addListener(marker, 'click', function() { 
     infoWindow.open(map, marker); 
@@ -243,7 +249,8 @@ fs.renderListPlaces = function(places, list) {
   $('#activeListTable').html('');
   fs.renderResults(places, $('#activeListTable'), true);
   for(var i = 0, l = places.length; i < l; i++) {
-    fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
+    fs.addMarker(places[i], places[i].lat, places[i].lng, places[i].name, places[i].desc);
+    //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
   }
 };
 

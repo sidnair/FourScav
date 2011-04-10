@@ -82,7 +82,7 @@ class new:
 		hunt.users.append(lst_creator._id)
 		hunt.save()
 		
-		lst_creator.active_lsts.append(hunt._id)
+		lst_creator.active_lsts.append(str(hunt._id))
 		lst_creator.save()
 
 		print(hunt)
@@ -179,7 +179,7 @@ class user_lists:
 		for hid in user.active_lsts:
 			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
 		if inactive:
-			for hid in user.inactive_lsts:
+			for hid in user.dead_lsts:
 				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
 		return json.dumps(hunts)
 

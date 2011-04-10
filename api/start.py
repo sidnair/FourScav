@@ -7,6 +7,7 @@ from models import Place
 import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
+from helpers import *
 
 web.config.debug = False
 
@@ -70,28 +71,11 @@ class new:
 		#set end time
 		lst_end = int(web.input().get('end', -1))
 		#add a "creator"
-		lst_creator = web.input()['creator']
+		lst_creator = get_current_user()._id
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
 		hunt.save()
 		return json.dumps(hunt.to_dict())
-
-class add_place:
-	def POST(self,list_id,fsq_id):
-		oauth = None
-		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth #oauth token
-		f = urllib.urlopen(hostname)
-		accResponse = f.read()
-		accDict = json.loads(accResponse)
-		accName = accDict.get("name")
-		accLat = accDict.get("location").get("lat")
-		accLong = accDict.get("location").get("long")
-		accDesc = accDict.get("description")
-		accTags = accDict.get("tags")
-		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, 
-						geo_long = accLong)
-		place.save()
-		pass
 
 class remove_place:
 	def POST(self,list_id,fsq_id):
@@ -131,7 +115,6 @@ class get_list:
 		user = User.find_one({'_id':list_id})
 		return json.dumps(user.to_dict())
 		
-def 
 
 class get_username:
 	def GET(self):
@@ -144,7 +127,7 @@ if __name__ == '__main__':
 def update(user_id):
 	#database gets list of hunts from user_id
 	for hunt in hunts:
-
+		pass
 	#gets all users on hunt
 	#gets all location on hunt, puts them in dicty
 

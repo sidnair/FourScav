@@ -1,0 +1,17 @@
+{
+	name:"Ice Cream Charlies",
+	lat:40.82535184,
+	lng:-74.10937132,
+}
+
+{
+	name:"Chipotle Mexican Grill",
+	lat: 40.742054,
+	lng: -74.001246,
+}
+
+{
+	name:"Ippudo",
+	lat:40.730673519047336,
+	lng:-73.99092435836792,
+}

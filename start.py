@@ -22,6 +22,7 @@ urls = (
 	'/list/([0-9a-f]+)/join', 'join',
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
+	'/venues/search', 'search',
 )
 
 app = web.application(urls, locals())

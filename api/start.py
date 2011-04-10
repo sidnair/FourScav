@@ -91,6 +91,8 @@ class add_place:
 		accResponse = f.read()
 		accDict = json.loads(accResponse)
 
+		user = get_current_user()  #of type user
+
 		accName = accDict.get("name")
 		accLat = accDict.get("location").get("lat")
 		accLong = accDict.get("location").get("long")
@@ -146,7 +148,6 @@ class get_list:
 		user = User.find_one({'_id':list_id})
 		return json.dumps(user.to_dict())
 		
-def 
 
 class get_username:
 	def GET(self):
@@ -163,14 +164,14 @@ def update(user_id):
 	hunts = usr_dict['active_lsts']
 
 	for hunt in hunts:
-		hunt_dict = hunt.to_dict()
+		hunt_dict = Hunt.find({"_id" : hunt[0]}).to_dict()
 		usrs = hunt_dict['users']
 	#gets all users on hunt
 	#gets all location on hunt, puts them in dicty
 
 		#hunt_last_updated = hunt.get("startTime")
 		for usr in usrs:
-			cur_usr_dict = usr.to_dict()
+			cur_usr_dict = User.find({"user_id",usr}).to_dict()
 			tmp_id = cur_usr_dict['user_id']
 			tmp_oauth = cur_usr_dict['token']
 			hostname = "https://api.foursquare.com/v2/users/" + tmp + "/venuehistory?" + "?afterTimestamp= " + hunt_last_updated + "&oauth_token="+tmp_oauth
@@ -198,9 +199,9 @@ def update(user_id):
 							if winner && not hunt.winner:
 								hunt.winner = cur_usr_dict['user_id']
 
-#							for 
+							usr.active_lsts = cur_active
 							usr.save()
-					#if winner, and winner is None, set him to winner
+
 		hunt.start_time = int(time.time())
 		hunt.save()
 		#updates start time on all hunts

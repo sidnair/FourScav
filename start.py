@@ -90,7 +90,7 @@ class new:
 
 class venue_search:
 	def POST(self):
-		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query
+		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query+ "&ll=" + web.input().lat + "," + web.input().long +  "&oauth_token=" + session.token
 		return urllib.urlopen(hostname)
 		
 

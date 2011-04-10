@@ -23,7 +23,7 @@ urls = (
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
 	'/user/lists', 'user_lists',
-	'/venues/search', 'search',
+	'/venues/search', 'venue_search',
 )
 
 app = web.application(urls, locals())
@@ -184,9 +184,6 @@ class get_username:
 		user = get_current_user()
 		return user.fullname
 
-if __name__ == '__main__':
-	app.run()
-
 def update(user_id):
 	#database gets list of hunts from user_id
 	cur_usr = User.find_one({"user_id":user_id})
@@ -236,3 +233,7 @@ def update(user_id):
 		hunt.save()
 		#updates start time on all hunts
 		#update start time w/ int(time.time())
+		
+if __name__ == '__main__':
+	app.run()
+

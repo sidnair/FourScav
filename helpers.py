@@ -21,14 +21,21 @@ def expand_hunt(hunt):
 	d['creator'] = User.find_one({'_id':hunt.creator}).to_dict()
 	d['places'] = []
 	for pid in hunt.places:
-		place = Place.find_one({'_id':pid}).to_dict()
-		d['places'].append(place)
+		place = Place.find_one({'_id':pid})
+		if place != None:
+			place = place.to_dict()
+			d['places'].append(place)
 	d['tags'] = hunt.tags
 	d['users'] = []
 	for uid in hunt.users:
-		user = User.find_one({'_id':uid}).to_dict()
-		d['users'].append(user)
-	d['winner'] = User.find_one({'_id':hunt.winner}).to_dict()
+		user = User.find_one({'_id':uid})
+		if user != None:
+			user = user.to_dict()
+			d['users'].append(user)
+	winner = User.find_one({'_id' : hunt.winner})
+	d.winner=''
+	if winner != None:
+		d['winner'] = winner.to_dict()
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
 	d['_id'] = str(hunt._id)

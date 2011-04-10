@@ -11,7 +11,7 @@ from helpers import *
 
 web.config.debug = False
 
-connect('4sqav', 'flame.mongohq.com', 27058, '4sqav', 'hacknyspring2011')
+connect('4sqav')
 
 urls = (
 	'/auth/', 'auth',

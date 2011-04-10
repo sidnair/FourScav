@@ -114,7 +114,7 @@ body {
 /* overrides some default overlay settings */
 #splashHeader {
   bottom:80px;
-  right:40px;
+  right:50px;
   padding: 40px;
   width:60%;
 }

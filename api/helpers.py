@@ -12,5 +12,10 @@ def add_place(list_id, fsq_id):
 	place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, 
 					geo_long = accLong)
 	place.save()
-	
+
+def remove_place(list_id, fsq_id:
+	hunt = Hunt.find_one({'_id' : list_id})
+	place = Place.find_one({'fsqid' : fsq_id})
+	hunt.places.remove(place._id)
+
 def expand_place():

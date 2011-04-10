@@ -5,6 +5,8 @@ fs.userLocation = {};
 //ACTUALLY LOAD THIS
 fs.userLists = { };
 
+fs.storedMarkers = [];
+
 fs.NEW_YORK_LAT = 40.69847032728747;
 fs.NEW_YORK_LNG = -73.9514422416687;
 
@@ -15,6 +17,12 @@ fs.NEW_YORK_LNG = -73.9514422416687;
         name: 'foo',
         id: '023q4q',
         desc: 'lorem ipsum'
+        places: [{
+          name:
+          desc:
+          lat:
+          lng:
+        },
   };
 
   list1 = {
@@ -40,8 +48,41 @@ fs.NEW_YORK_LNG = -73.9514422416687;
 
 
 //SANITIZE DATA
-fs.loadLists = function() {
+fs.loadLists = function(serverLists) {
+  for(var i = 0, l = serverLists.length; i < l; i++) {
+    var currentServerList = serverLists[i];
+    var formattedList = {};
+    formattedList.id = currentServerList._id;
+    formattedList.desc = currentServerList.desc;
+    formattedList.name = currentServerList.name;
+    formattedList.places = currentServerList.places;
+    fs.userLists[formattedList.id] = formattedList;
+  }
 }
+
+fs.clearMarkers = function() {
+  for(var m in fs.storedMarkers) {
+    fs.storedMarkers[m].setVisible(false);
+  }
+  fs.storedMarkers = [];
+  //remove from fs.storedMarkers
+}
+
+fs.addMarker = function(map, lat, lng, name, desc) {
+  var loc = new google.maps.LatLng(lat, lng);
+  var marker = new google.maps.Marker({
+      position: loc, 
+      map: map, 
+      title: name
+  });
+  var infoWindow = new google.maps.InfoWindow({ 
+    content: name + ' - ' + desc
+  }); 
+  google.maps.event.addListener(marker, 'click', function() { 
+    infoWindow.open(map, marker); 
+  }); 
+  fs.storedMarkers.push(marker);
+};
 
 fs.makeListDropDown = function(list) {
   $.each(list, function(key, element) {
@@ -126,12 +167,12 @@ fs.inlineEdit = function(node, type, holderText) {
 }
 
 fs.inlineHover = function(node) {
-  var oldColor = node.attr('backgroundColor') || 'white';
+  var oldColor = node.attr('background') || 'white';
   node.mouseover(function() {
-      $(this).animate({backgroundColor: 'yellow'}, 'fast');
+      $(this).animate({background: 'yellow'}, 'fast');
   });
   node.mouseleave(function() {
-      $(this).animate({backgroundColor: oldColor }, 'fast');
+      $(this).animate({background: oldColor }, 'fast');
   });
 }
 
@@ -166,6 +207,7 @@ fs.loadMaps = function() {
     fs.userLocation.lat = fs.NEW_YORK_LAT;
     fs.userLocation.lng = fs.NEW_YORK_LNG;
   }
+  fs.map = map;
 };
 
 fs.loadFirstList = function() {
@@ -203,11 +245,22 @@ fs.searchVenue = function(query) {
   });
 }
 
-fs.renderResults = function(result_list) {
-  //cache results div
-  resultListDiv = $('#searchResults');
-  //clear prexisting results
-  resultListDiv.html('<table></table>');
+fs.renderListPlaces = function(places, list) {
+  $('#activeListTable').html('');
+  fs.renderResults(places, $('#activeListTable'), true);
+  for(var i = 0, l = places.length; i < l; i++) {
+    fs.addMarker(places[i], places[i].lat, places[i].lng, places[i].name, places[i].desc);
+    //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
+  }
+};
+
+fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
+  if(!resultListDiv) {
+    //cache results div
+    resultListDiv = $('#searchResults');
+    //clear prexisting results
+    resultListDiv.html('<table></table>');
+  }
   for(var i = 0, l = result_list.length; i < l; i++) {
     var result = result_list[i];
     var resultDiv = $('<tr class="searchResult"></tr>');
@@ -220,21 +273,23 @@ fs.renderResults = function(result_list) {
       var name = cat.name;
       resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
     }
-    resultListDiv.append(resultDiv);
-    $('#' + result.id + 'Button').button({
-icons: {primary:'ui-icon-plusthick'},
-      text: false
-    });
-    (function() {
-      var clickF = (function(resultDiv) {
-          return function() {
-            fs.addResult(resultDiv, result.id + 'Button');
-          };
-      })(resultDiv);
-      addButton.click(function() {
-          clickF();
+    if(!shouldNotAdd) {
+      resultListDiv.append(resultDiv);
+      $('#' + result.id + 'Button').button({
+  icons: {primary:'ui-icon-plusthick'},
+        text: false
       });
-    })();
+      (function() {
+        var clickF = (function(resultDiv) {
+            return function() {
+              fs.addResult(resultDiv, result.id + 'Button');
+            };
+        })(resultDiv);
+        addButton.click(function() {
+            clickF();
+        });
+      })();
+    }
   }
 }
 

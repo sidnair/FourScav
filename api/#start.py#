@@ -4,8 +4,6 @@ import urllib
 import json
 from models import User
 
-web.config.debug = False
-
 urls = (
 	'/auth/', 'auth',
 	'/list/new', 'new',
@@ -19,7 +17,10 @@ urls = (
 
 app = web.application(urls, locals())
 
-session = web.session.Session(app, DiskStore('../sessions'))
+session = web.session.Session(app, Diskstore('../sessions'))
+
+if __name__ == '__main__':
+	app.run()
 
 class auth:
 	def GET(self):
@@ -34,14 +35,11 @@ class auth:
 			return "ID 10 T error"
 		else:
 			session.token = accToken
-			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
-			f = urllib.urlopen(usernameUrl)
-			userDataStr = f.read()
-			userData = json.loads(userDataStr)['response']
-			fullname = userData.get('firstname')+' '+userData.get('lastname')
-			print(userDataStr)
-			user = User(fullname=fullname, token=accToken, user_id=userData['id']
-			return "Congrats - you logged in as "+fullname
+			return "Congrats - you logged in"
+
+class login:
+	def GET(self):
+		return "<a href=""></a>"
 
 class new:
 	def POST(self):
@@ -81,7 +79,6 @@ class remove_place:
 
 class add_tag:
 	def POST(self,list_id,fsq_id):
-		#database magic
 		pass
 
 class remove_tag:
@@ -95,9 +92,5 @@ class join:
 		pass
 
 class get_list:
-	def POST(self,list_id,fsq_id):
+	def POST(self,list_id,):
 		pass
-
-if __name__ == '__main__':
-	app.run()
-

@@ -37,7 +37,12 @@ def expand_hunt(hunt):
 			d['users'].append(user)
 	d['start_time'] = hunt.start_time
 	d['end_time'] = hunt.end_time
-	d['_id'] = str(hunt._id).encode('ascii')
+	if hunt._id!=[None]:
+		d['_id'] = str(hunt._id).encode('ascii')
+	else:
+		d['_id'] = -1
+		
+
 	d['name'] = hunt.name.encode('ascii')
 	d['desc'] = hunt.desc.encode('ascii')
 	print(str(d))
@@ -50,6 +55,9 @@ def clean_userdict(userdict):
 		userdict['active_lsts'][i] = str(hid).encode('ascii')
 	for i, hid in enumerate(userdict['dead_lsts']):
 		userdict['dead_lsts'][i] = str(hid).encode('ascii')
+
+	if not userdict['_id']:
+		userdict['_id'] = -1
 	return userdict
 
 def remove_place(list_id, fsq_id):

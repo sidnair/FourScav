@@ -14,6 +14,7 @@ web.config.debug = False
 connect('4sqav')
 
 urls = (
+	'/static/main.html','main',
 	'/auth/', 'auth',
 	'/list/new', 'new',
 	'/list/([0-9a-f]+)/add_place/(.+)', 'add_place',
@@ -24,12 +25,17 @@ urls = (
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
 	'/user/lists', 'user_lists',
-	'/venues/search', 'venue_search'
+	'/venues/search', 'venue_search',
 )
 
 app = web.application(urls, locals())
 
 session = web.session.Session(app, DiskStore('./sessions/'))
+
+class main:
+	def GET(self):
+#		if not hasattr(session, "id"):
+		raise web.seeother("/static/index.html")
 
 def get_current_user():
 	return User.find_one({'token': session.token})

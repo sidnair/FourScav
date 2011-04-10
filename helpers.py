@@ -56,7 +56,7 @@ def clean_userdict(userdict):
 	for i, hid in enumerate(userdict['dead_lsts']):
 		userdict['dead_lsts'][i] = str(hid).encode('ascii')
 
-	if not userdict['_id']:
+	if not userdict.get('_id'):
 		userdict['_id'] = -1
 	return userdict
 

@@ -92,5 +92,5 @@ class join:
 		pass
 
 class get_list:
-	def POST(self,list_id,):
+	def POST(self,list_id):
 		pass

@@ -29,12 +29,14 @@ session = web.session.Session(app, DiskStore('../sessions'))
 
 class auth:
 	def GET(self):
-		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.authorizeURL , 'code' : web.input().code })
+		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData.clientSecret, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.oauthCallbackURL , 'code' : web.input().code })
 		
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
+		print(hostname)
 		accResponse = f.read()
 		accDict = json.loads(accResponse)
+		print(accResponse)
 		accToken = accDict.get("access_token")
 		if accToken == None:
 			return "ID 10 T error"
@@ -43,8 +45,8 @@ class auth:
 			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
 			f = urllib.urlopen(usernameUrl)
 			userDataStr = f.read()
-			userData = json.loads(userDataStr)['response']
-			fullname = userData.get('firstName')+' '+userData.get('lastName')
+			userData = json.loads(userDataStr)['response']['user']
+			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
 			user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 			user.save()

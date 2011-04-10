@@ -58,7 +58,7 @@ class auth:
 			fullname = userData.get('firstName', '')+' '+userData.get('lastName','')
 			print(userDataStr)
 			user = User.find_one({'token':accToken})
-			if user==None:
+			if user==None:	
 				user = User(fullname=fullname, token=accToken, user_id=userData['id'])
 				user.save()
 			raise web.seeother('/static/main.html')
@@ -67,19 +67,44 @@ class new:
 	def POST(self):
 		#set start time
 		print(web.input())
-		q = json.loads(web.input().q)
-		lst_start = int(q.get('start', time.time()))
-		lst_places = q['places']
+		#name, desc, tags (defaults to an empty array), places
+		lst_start = -1
+		if hasattr(web.input(), "start"):
+			lst_start = web.input().start
+		else:
+			lst_start = time.time()
+
+#		lst_start = time.time()
+		lst_desc = web.input().desc
+		lst_name = web.input().name
+
+		lst_places = -1
+		if hasattr(web.input(), "places"):
+			
+
+			lst_places = web.input().places
+		else:
+			lst_places = []
 		#add places/tags
-		lst_tags = q['tags']
+
+		lst_tags = -1
+		if hasattr(web.input(), "tags"):
+			lst_tags = web.input().tags
+		else:
+			lst_tags = []
+
 		#set end time
-		lst_end = int(q.get('end', -1))
+		lst_end = -1
+		if hasattr(web.input(), "end"):
+			lst_end = web.input().end
+		else:
+			lst_end = -1
+
 		#add a "creator"
 		lst_creator = get_current_user()
 		
 		print(lst_creator._id)
-		hunt = Hunt(name=q.get("name",""), desc=q.get("desc","0xFEEDFACE"), creator = lst_creator._id, places = lst_places, tags = lst_tags, 
-					start_time = lst_start, end_time = lst_end)
+		hunt = Hunt(name=lst_name, desc=lst_desc, creator = lst_creator._id, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
 		hunt.users.append(lst_creator._id)
 		hunt.save()
 		

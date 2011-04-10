@@ -5,11 +5,47 @@ body {
   font-family: Tahoma, Geneva, sans-serif;
 }
 
+#splashBody {
+  background-image:url('../images/screen.png');
+}
+
+.cover {
+  position: absolute;
+  height: 100%;
+  width:100%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#splashHeader h1 {
+  font-size: 40px;
+  /* foursquare color */
+  color: #00c0de;
+  padding-bottom:35px;
+}
+
+#splashHeader h2 {
+  font-size: 30px;
+  color: #bae71c;
+  padding-bottom:35px;
+}
+
+#splashHeader h3 {
+  font-size: 22px;
+  /* foursquare color */
+  color: #00c0de;
+}
+
+.dropdown select {
+  width: 200px;
+}
+
 .overlay {
-  z-index: 1001;
+  border: 1px solid #ccc;
+
+  z-index: 1;
   background-color: white;
-  background-color: rgba(255, 255, 255, 1.0);
-  filter: Alpha(Opacity=100);
+  background-color: rgba(255, 255, 255, 0.93);
+  filter: Alpha(Opacity=93);
 
   padding: 15px;
   -moz-border-radius: 10px;
@@ -29,21 +65,35 @@ body {
   position: absolute;
 }
 
+#lWrapepr {
+  position: absolute;
+}
+
+#loginButton {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
 #listBox {
-  top: 10px;
-  left: 10px;
+  top: 30px;
+  left: 30px;
   border: #ccc 10px;
 }
 
 /* green: #bae71c */
 
 #listBox h1 {
-  /* foursquare color */
-  font-size: 25px;
+  font-size: 20px;
   margin-left: auto;
   margin-right: auto;
+  /* foursquare color */
   color: #00c0de;
   padding-bottom: 10px;
+}
+
+#listSelection h1 {
+  font-size: 35px;
 }
 
 #activeListTitle {
@@ -59,3 +109,12 @@ body {
   height: 100%;
   width: 100%;
 }  
+
+
+/* overrides some default overlay settings */
+#splashHeader {
+  bottom:80px;
+  right:40px;
+  padding: 40px;
+  width:60%;
+}

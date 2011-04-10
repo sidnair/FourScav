@@ -177,17 +177,31 @@ def update(user_id):
 			f = urllib.urlopen(hostname)
 			accResponse = f.read()
 			accDict = json.loads(accResponse)
-			lst = accDict['response']['venues']['items']
+			venues = accDict['response']['venues']['items']
 
-			for elt in lst:
+			for elt in venues:
 				if elt["venue"]["id"] in dicty:
 					#set list of places where he needs to go to show he has been there
 
-					hunt_lsts = []
-					#check if winner
-					for :
-						hunt_lsts.append()
+					cur_active = cur_usr_dict['active_lsts']
+					for x in range(len(cur_active)):
+						
+						if hunt_dict['_id']==cur_active[x][0]:
+							winner = True
+							for y in range(len(cur_active[x][1])):
+								
+								if elt["venue"]["id"] == cur_active[x][1][y][0]:
+									cur_active[x][1][y] == cur_active[x][1][y][0],True
+								if not cur_active[x][1][y][1]:
+									winner = False
+
+							if winner && not hunt.winner:
+								hunt.winner = cur_usr_dict['user_id']
+
+#							for 
+							usr.save()
 					#if winner, and winner is None, set him to winner
-					pass
+		hunt.start_time = int(time.time())
+		hunt.save()
 		#updates start time on all hunts
 		#update start time w/ int(time.time())

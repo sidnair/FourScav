@@ -99,8 +99,8 @@ body {
   position: absolute;
   height: 100%;
   width:100%;
-  background-color: rgba(255, 255, 255, 0.6);
-  filter: Alpha(Opacity=60);
+  background-color: rgba(255, 255, 255, 0.7);
+  filter: Alpha(Opacity=70);
 }
 
 #splashBody {
@@ -172,3 +172,12 @@ button {
   color: #00c0de;
   padding-bottom: 10px;
 }
+
+#searchResults tr {
+  height:50px;
+}
+
+#newListTable tr {
+  height:50px;
+}
+

@@ -61,14 +61,20 @@ fs.loadListDisplay = function(listId) {
     $('#activeListTitle').html(fs.userLists[listId].name);
     $('#activeListDescription').html(fs.userLists[listId].desc);
     $('#activeListInfo').show();
+    $('#searchAndStandings').hide();
+    /*
     $('#search').hide();
     $('#standings').show();
+    */
   } else {
     //it is a new list
     $('#activeListInfo').hide();
     $('#newListMaker').show();
+    $('#searchAndStandings').show();
+    /*
     $('#standings').hide();
     $('#search').show();
+    */
   }
 }
 
@@ -176,18 +182,19 @@ fs.searchVenue = function(query) {
       lat:fs.userLocation.lat,
       'long':fs.userLocation.lng
   }, function(data, textStatus, jqXHR) {
-    //console.log($.parseJSON(data));
     var agg_results = [];
     var k = 0;
     var result = $.parseJSON(data);
     if(result.response && result.response.groups && result.response.groups[0]) {
       var keys = [0, 1];
       for(var i in keys) {
-        var items = result.response.groups[i].items;
-        for(var j = 0, l = items.length; j < l; j++) {
-          if(k < 11) {
-            agg_results[k] = items[j];
-            k++;
+        var items = result.response.groups[i] && result.response.groups[i].items;
+        if(items) {
+          for(var j = 0, l = items.length; j < l; j++) {
+            if(k < 6) {
+              agg_results[k] = items[j];
+              k++;
+            }
           }
         }
       }
@@ -260,10 +267,43 @@ fs.addSearchEvents = function() {
   });
 }
 
+fs.addSubmitEvent = function() {
+  $('#submitListButton').click(function() {
+      var enteredPlaces = [];
+      $('#newListTable tr').each(function(index, element) {
+        fullId = $('td', element)[1].id
+        enteredPlaces.push(fullId);
+      });
+      var obj = {
+          name:$('#newListTitle').text(),
+          desc:$('#newListDescription').text(),
+          tags:[],
+          places:enteredPlaces
+      };
+      console.log(obj);
+      $.post('/list/new', obj, function(data, textStatus, jqXHR) {
+          console.log(data);
+         //on success, add stuff to list 
+      });
+      /*
+      $('#newListTable tr').each(function(index, element) {
+        console.log($('td span', element));
+        $('td span', element).each(function(i, e) {
+          var fullId = e.id;
+          if(fullId && fullId.indexOf('ButtonRemove') > 0) {
+            enteredPlaces.push(fullId.replace('ButtonRemove', ''));
+          }
+        });
+      });
+      */
+  });
+}
+
 $(document).ready(function() {
   fs.makeListDropDown(fs.userLists);
   fs.buildListCreater();
   fs.loadFirstList();
   fs.loadMaps();
   fs.addSearchEvents();
+  fs.addSubmitEvent();
 });

@@ -88,7 +88,7 @@ class new:
 		print(hunt)
 		return expand_hunt(hunt)
 
-class search:
+class venue_search:
 	def POST(self):
 		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query
 		return urllib.urlopen(hostname)
@@ -174,7 +174,7 @@ class get_list:
 		return expand_hunt(hunt)
 
 class user_lists:
-	def GET(self, user_id, inactive=False):
+	def GET(self, inactive=False):
 		user = get_current_user()
 		hunts = []
 		for hid in user.active_lsts:

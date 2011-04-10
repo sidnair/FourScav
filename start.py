@@ -23,7 +23,7 @@ urls = (
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
 	'/user/lists', 'user_lists',
-	'/venues/search', 'venue_search',
+	'/venues/search', 'venue_search'
 )
 
 app = web.application(urls, locals())
@@ -178,10 +178,10 @@ class user_lists:
 		user = get_current_user()
 		hunts = []
 		for hid in user.active_lsts:
-			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid}))))
+			hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
 		if inactive:
 			for hid in user.inactive_lsts:
-				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid}))))		
+				hunts.append(expand_hunt(Hunt.find_one({'_id' : hid})))
 		return json.dumps(hunts)
 
 class get_username:

@@ -174,7 +174,7 @@ class get_list:
 		return expand_hunt(hunt)
 
 class user_lists:
-	def GET(self, user_id, inactive=False):
+	def GET(self, inactive=False):
 		user = get_current_user()
 		hunts = []
 		for hid in user.active_lsts:

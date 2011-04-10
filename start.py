@@ -7,6 +7,7 @@ import time
 from snakelegs import connect
 from secrets.secrets import ConfigData, apiURL
 from helpers import *
+from pymongo.objectid import ObjectId
 
 web.config.debug = False
 
@@ -169,8 +170,10 @@ class leave:
 
 class get_list:
 	def GET(self,list_id):
-		hunt = Hunt.find_one({'_id':list_id})
-		return json.dumps(expand_hunt(hunt))
+		hunt = Hunt.find_one({'_id':ObjectId(list_id)})
+		if hunt:
+			return json.dumps(expand_hunt(hunt))
+		return json.dumps({'ok': False})
 
 class user_lists:
 	def GET(self, inactive=False):

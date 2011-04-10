@@ -8,6 +8,7 @@ body {
 .clickable {
   cursor:pointer;
 }
+
 .dropdown select {
   width: 200px;
 }
@@ -49,7 +50,20 @@ body {
 #listBox {
   top: 30px;
   left: 30px;
-  border: #ccc 10px;
+}
+
+#searchAndStandings {
+  padding-top:20px;
+  top:30px;
+  right:85px;
+}
+
+#searchBar {
+  font-size:120%;
+  padding:5px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  -khtml-border-radius: 7px;
 }
 
 /* green: #bae71c */
@@ -97,13 +111,13 @@ body {
   font-size: 40px;
   /* foursquare color */
   color: #00c0de;
-  padding-bottom:35px;
+  padding-bottom:30px;
 }
 
 #splashHeader h2 {
   font-size: 30px;
   color: #bae71c;
-  padding-bottom:35px;
+  padding-bottom:30px;
 }
 
 #splashHeader h3 {
@@ -125,5 +139,26 @@ body {
   width:60%;
 }
 
-#loginButtonLink {
+.huntTitle, .huntDesc {
+  padding: 5px 0;
+}
+
+#standings {
+  display:none;
+}
+
+button {
+  padding: 5px 0;
+}
+
+.catIcon {
+  padding-left:10px;
+}
+
+.searchResult {
+  padding-bottom:25px;
+}
+
+.searchButton {
+  padding-right:5px;
 }

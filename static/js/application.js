@@ -1,11 +1,12 @@
-
 //top-level name for the app
 var fs = {};
-
-//fs.userLocation = {};
+fs.userLocation = {};
 
 //ACTUALLY LOAD THIS
 fs.userLists = { };
+
+fs.NEW_YORK_LAT = 40.69847032728747;
+fs.NEW_YORK_LNG = -73.9514422416687;
 
 //dummy load
 (function() {
@@ -79,11 +80,12 @@ fs.buildListCreater = function(title, display) {
   $('button').button();
 }
 
-fs.inlineEdit = function(node, type) {
+fs.inlineEdit = function(node, type, holderText) {
   var originalHtml = node.html();
   var originalText = node.text();
+  holderText = holderText || originalText;
   var options = $('<' + type + '>' + '</' + type + '>');
-  options.val(node.text());
+  options.val(originalText);
   node.html('');
   node.append(options);
   //TODO - add cancel button
@@ -96,10 +98,19 @@ fs.inlineEdit = function(node, type) {
     });
   }
   options.blur(function() {
+    if(options.val() === '') {
+      options.val(holderText);
+    }
     node.html(originalHtml.replace(originalText, options.val()));
     node.remove(type);
-    node.one('click', function() { fs.inlineEdit(node, type); });
+    node.one('click', function() { fs.inlineEdit(node, type, holderText); });
   });
+  options.focus(function() {
+      if(originalText === holderText) {
+        options.val('');
+      }
+  });
+  options.focus();
 }
 
 fs.inlineHover = function(node) {
@@ -113,7 +124,7 @@ fs.inlineHover = function(node) {
 }
 
 fs.loadMaps = function() {
-  var newyork = new google.maps.LatLng(40.69847032728747, -73.9514422416687);
+  var newyork = new google.maps.LatLng(fs.NEW_YORK_LAT, fs.NEW_YORK_LNG);
   var myOptions = {
     zoom: 14,
     center: newyork,
@@ -134,21 +145,121 @@ fs.loadMaps = function() {
   //use html5 geolocation if possible - otherwise, it stays at default of new york
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      userLocation.lat = position.coords.latitude;
-      userLocation.lng = position.coords.longitude;
-      initialLocation = new google.maps.LatLng(userLocation.lat, userLocation.lng);
+      fs.userLocation.lat = position.coords.latitude;
+      fs.userLocation.lng = position.coords.longitude;
+      initialLocation = new google.maps.LatLng(fs.userLocation.lat, fs.userLocation.lng);
       map.setCenter(initialLocation);
     });
+  } else {
+    fs.userLocation.lat = fs.NEW_YORK_LAT;
+    fs.userLocation.lng = fs.NEW_YORK_LNG;
   }
-};
-
+}; 
 fs.loadFirstList = function() {
   fs.loadListDisplay($('#listChoice option')[0].id);
 };
+
+fs.searchVenue = function(query) {
+  //don't proceed if query is undefined, empty, etc
+  if(!query) {
+    return;
+  }
+  $.post('/venues/search', {
+      query:query,
+      lat:fs.userLocation.lat,
+      'long':fs.userLocation.lng
+  }, function(data, textStatus, jqXHR) {
+  console.log($.parseJSON(data));
+    var agg_results = [];
+    var k = 0;
+    var result = $.parseJSON(data);
+    if(result.response && result.response.groups && result.response.groups[0]) {
+      var keys = [0, 1];
+      for(var i in keys) {
+        var items = result.response.groups[i].items;
+        for(var j = 0, l = items.length; j < l; j++) {
+          if(k < 11) {
+            agg_results[k] = items[j];
+            k++;
+          }
+        }
+      }
+      fs.renderResults(agg_results);
+    }
+  });
+}
+
+fs.renderResults = function(result_list) {
+  //cache results div
+  resultListDiv = $('#searchResults');
+  //clear prexisting results
+  resultListDiv.html('<table></table>');
+  for(var i = 0, l = result_list.length; i < l; i++) {
+    var result = result_list[i];
+    var resultDiv = $('<tr class="searchResult"></tr>');
+    var addButton = $('<td><span id="' + result.id + 'Button" class="searchButton"></span></td>');
+    resultDiv.append(addButton);
+    resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
+    for(var j = 0, l2 = result.categories.length; j < l2; j++) {
+      var cat = result.categories[j];
+      var icon = cat.icon;
+      var name = cat.name;
+      resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
+    }
+    resultListDiv.append(resultDiv);
+    $('#' + result.id + 'Button').button({
+icons: {primary:'ui-icon-plusthick'},
+      text: false
+    });
+    (function() {
+      var clickF = (function(resultDiv) {
+          return function() {
+            fs.addResult(resultDiv);
+          };
+      })(resultDiv);
+      addButton.click(function() {
+          clickF();
+      });
+    })();
+  }
+}
+
+fs.addResult = function(resultNode) {
+  var clonedNode = resultNode.clone();
+  $('#newListTable').append(clonedNode);
+  var oldAdd = $($('td', clonedNode)[0])
+  var oldId = oldAdd.id;
+  console.log(oldId);
+  oldAdd.remove();
+  var removeButton = $('<td><span id="' + oldId + '" class="searchButton"></span></td>');
+  resultNode.prepend(removeButton);
+  $('#' + result.id + 'Button').button({
+      icons: {primary:'ui-icon', secondary:'ui-icon-plusthick'},
+      text: false
+  });
+  removeButton.click(function() {
+      $(this).remove();
+  });
+  //change icon to remove
+  //clone the result node (row) and paste it
+}
+
+fs.addSearchEvents = function() {
+  var runSearch = function() { fs.searchVenue($('#searchBar').val()); };
+  $('#searchBar').keydown(function(e) {
+    if(e.keyCode === 13) {
+      runSearch();
+    }
+  });
+  $('#searchButton').click(function(e) {
+    runSearch();
+  });
+}
 
 $(document).ready(function() {
   fs.makeListDropDown(fs.userLists);
   fs.buildListCreater();
   fs.loadFirstList();
   fs.loadMaps();
+  fs.addSearchEvents();
 });

@@ -64,8 +64,8 @@ class new:
 
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
 		hunt.save()
-		#return new list id
-		pass
+		
+		return hunt._id
 
 class add_place:
 	def POST(self,list_id,fsq_id):

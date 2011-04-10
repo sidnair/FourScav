@@ -4,6 +4,8 @@ import urllib
 import json
 from models import User
 
+web.config.debug = False
+
 urls = (
 	'/auth/', 'auth',
 	'/list/new', 'new',
@@ -17,10 +19,7 @@ urls = (
 
 app = web.application(urls, locals())
 
-session = web.session.Session(app, Diskstore('../sessions'))
-
-if __name__ == '__main__':
-	app.run()
+session = web.session.Session(app, DiskStore('../sessions'))
 
 class auth:
 	def GET(self):
@@ -35,11 +34,9 @@ class auth:
 			return "ID 10 T error"
 		else:
 			session.token = accToken
+			f = urllib.urlopen('https://api.foursquare.com/v2/users/self')
+			print(f.read())
 			return "Congrats - you logged in"
-
-class login:
-	def GET(self):
-		return "<a href=""></a>"
 
 class new:
 	def POST(self):
@@ -95,3 +92,7 @@ class join:
 class get_list:
 	def POST(self,list_id,fsq_id):
 		pass
+
+if __name__ == '__main__':
+	app.run()
+

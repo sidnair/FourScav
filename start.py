@@ -63,12 +63,13 @@ class new:
 	def POST(self):
 		#set start time
 		print(web.input())
-		lst_start = int(web.input().get('start', time.time()))
-		lst_places = web.input()['places']
+		q = json.loads(web.input().q)
+		lst_start = int(q.get('start', time.time()))
+		lst_places = string.split(q['places'])
 		#add places/tags
-		lst_tags = web.input()['tags']
+		lst_tags = q['tags']
 		#set end time
-		lst_end = int(web.input().get('end', -1))
+		lst_end = int(q.get('end', -1))
 		#add a "creator"
 		lst_creator = get_current_user()._id
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 

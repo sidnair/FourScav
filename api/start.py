@@ -59,6 +59,7 @@ class new:
 		#add a "creator"
 
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, start_time = lst_start, end_time = lst_end)
+		hunt.save()
 		#return new list id
 		pass
 
@@ -77,6 +78,7 @@ class add_place:
 		accTags = accDict.get("tags")
 
 		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
+		place.save()
 		#database magic
 		pass
 

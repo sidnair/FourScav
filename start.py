@@ -22,11 +22,12 @@ urls = (
 	'/list/([0-9a-f]+)/join', 'join',
 	'/list/([0-9a-f]+)', 'get_list',
 	'/user/name', 'get_username',
+	'/venues/search', 'search',
 )
 
 app = web.application(urls, locals())
 
-session = web.session.Session(app, DiskStore('../sessions'))
+session = web.session.Session(app, DiskStore('./sessions/'))
 
 def get_current_user():
 	return User.find_one({'token': session.token})
@@ -47,6 +48,7 @@ class auth:
 					front page and try again"""
 		else:
 			session.token = accToken
+			print(session.token)
 			usernameUrl = 'https://api.foursquare.com/v2/users/self?oauth_token='+accToken
 			f = urllib.urlopen(usernameUrl)
 			userDataStr = f.read()
@@ -63,16 +65,19 @@ class new:
 	def POST(self):
 		#set start time
 		print(web.input())
-		lst_start = int(web.input().get('start', time.time()))
-		lst_places = web.input()['places']
+		q = json.loads(web.input().q)
+		lst_start = int(q.get('start', time.time()))
+		lst_places = q['places']
 		#add places/tags
-		lst_tags = web.input()['tags']
+		lst_tags = q['tags']
 		#set end time
-		lst_end = int(web.input().get('end', -1))
+		lst_end = int(q.get('end', -1))
 		#add a "creator"
 		lst_creator = get_current_user()._id
+		print(lst_creator)
 		hunt = Hunt(creator = lst_creator, places = lst_places, tags = lst_tags, 
 					start_time = lst_start, end_time = lst_end)
+		hunt.users.append(lst_creator)
 		hunt.save()
 		print(hunt)
 		return expand_hunt(hunt)
@@ -90,7 +95,12 @@ class add_place:
 
 		f = urllib.urlopen(hostname)
 		accResponse = f.read()
+
+		print accResponse
+
 		accDict = json.loads(accResponse)
+
+
 
 		user = get_current_user()  #of type user
 
@@ -106,9 +116,15 @@ class add_place:
 #		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/links/" #oauth token
 
 #		hostname = "https://api.foursquare.com/v2/venues/" + fsq_id + "?" + oauth + "/tips/" #oauth token
+		
+		hunt=Hunt.find({'_id' : list_id})
+		
 
 		place = Place(name = accName,desc = accDesc, tags = accTags, geo_lat = accLat, geo_long = accLong)
+		hunt.places.append(place)
+		hunt.save()
 		place.save()
+		return json.dump({"success":True})
 
 
 class remove_place:

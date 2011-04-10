@@ -105,3 +105,29 @@ class get_list:
 
 if __name__ == '__main__':
 	app.run()
+
+def update(user_id):
+	#database gets list of hunts from user_id
+	for hunt in hunts:
+
+	#gets all users on hunt
+	#gets all location on hunt, puts them in dicty
+
+		#hunt_last_updated = hunt.get("startTime")
+		for usr in usrs:
+		#tmp_id = usr.get_id()
+		#tmp_oauth = usr.get_token()
+			hostname = "https://api.foursquare.com/v2/users/" + tmp + "/venuehistory?" + "?afterTimestamp= " + hunt_last_updated + "&oauth_token="+tmp_oauth
+			f = urllib.urlopen(hostname)
+			accResponse = f.read()
+			accDict = json.loads(accResponse)
+		#lst = accDict['response']['venues']['items']
+
+			for elt in lst:
+				if elt["venue"]["id"] in dicty:
+					#set list of places where he needs to go to show he has been there
+					#check if winner
+					#if winner, and winner is None, set him to winner
+					pass
+		#updates start time on all hunts
+	pass

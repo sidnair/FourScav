@@ -5,6 +5,7 @@ import json
 from models import User
 from models import Place
 import connection
+from secrets.secrets import ConfigData, apiURL
 
 web.config.debug = False
 
@@ -25,7 +26,7 @@ session = web.session.Session(app, DiskStore('../sessions'))
 
 class auth:
 	def GET(self):
-		params = urllib.urlencode({'client_id' : 'DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00', 'client_secret' : 'MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE', 'grant_type' : 'authorization_code', 'redirect_uri' : 'http://localhost:8080/auth/', 'code' : web.input().code })
+		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.authorizeURL , 'code' : web.input().code })
 		
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)

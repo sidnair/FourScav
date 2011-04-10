@@ -121,6 +121,11 @@ class get_list:
 		
 def 
 
+class get_username:
+	def GET(self):
+			user = User.find_one({'token': session.token})
+			return user
+
 if __name__ == '__main__':
 	app.run()
 

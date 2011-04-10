@@ -2,7 +2,7 @@ import web
 from web.session import Session, DiskStore
 import urllib
 import json
-from models import User
+nfrom models import User
 from models import Place
 import time
 from snakelegs import connect
@@ -30,7 +30,7 @@ session = web.session.Session(app, DiskStore('../sessions'))
 class auth:
 	def GET(self):
 		params = urllib.urlencode({'client_id' : ConfigData.clientID, 'client_secret' : ConfigData.clientSecret, 'grant_type' : 'authorization_code', 'redirect_uri' : apiURL.oauthCallbackURL , 'code' : web.input().code })
-		
+
 		hostname = "https://foursquare.com/oauth2/access_token?" + params
 		f = urllib.urlopen(hostname)
 		print(hostname)

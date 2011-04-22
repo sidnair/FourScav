@@ -101,9 +101,9 @@ class User(object):
     name.exposed = True
 
 class Hunts(object):
-    def new(self,name="a", desc = None, places = None, tags = []):
+    def new(self,name=None, desc = "great", places = ["a"], tags = []):
 #        return name
-        for val,key in [(name,0), (desc,1), (places,2)]:
+        for val,key in [(name,3), (desc,1), (places,2)]:
             if not val:
                 return json.dumps({'status':'fail', \
                                    'data':'Please enter all required params', \
@@ -142,7 +142,7 @@ class Hunts(object):
 $.ajax({
   type: 'POST',
   url: '/hunts/new',
-  data: obj,
+  data: {name:"Title"},
   success: function(data, textStatus, jqXHR) { console.log(data); },
   contentType:"application/json; charset=utf-8",
   dataType:"json"

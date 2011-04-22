@@ -101,10 +101,13 @@ class User(object):
     name.exposed = True
 
 class Hunts(object):
+    def new(self):
+        cl = cherrypy.request.headers['Content-Length']
+        rawbody = cherrypy.request.body.read(int(cl))
+        obj = json.loads(rawbody)
+        return json.dumps(obj)
 
-    def new(self, **jsonText):
         return jsonText
-        return json.loads(jsonText)
         for val,key in [(name,0), (desc,1), (places,2)]:
 
             if not val:

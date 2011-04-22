@@ -101,11 +101,18 @@ class User(object):
     name.exposed = True
 
 class Hunts(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
     def new(self):
-        cl = cherrypy.request.headers['Content-Length']
-        rawbody = cherrypy.request.body.read(int(cl))
-        obj = json.loads(rawbody)
-        return json.dumps(obj)
+        #this does the json parsing manually
+        #cl = cherrypy.request.headers['Content-Length']
+        #rawbody = cherrypy.request.body.read(int(cl))
+        #obj = json.loads(rawbody)
+        data = cherrypy.request.json
+        return data
+        #return json.dumps(obj)
 
         return jsonText
         for val,key in [(name,0), (desc,1), (places,2)]:
@@ -134,32 +141,24 @@ class Hunts(object):
 
     def bullshit(self):
         tmp = '''
-<html> <head><title></title></head>
+<html> <head><title>Sup</title></head>
 <body>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
         <script>
-          var obj = {
-              name: "Title",
-              desc: "Description",
-              tags:[],
-              places:['id1', 'id2']
-          };
-          str_obj = JSON.stringify(obj);
-          simple_obj = { name: "name", desc: "desc" };
-$.ajax({
-  type: 'POST',
-  url: '/hunts/new',
-  data: str_obj,
-  success: function(data) { console.log('here'); console.log(data); },
-  contentType:"application/json; charset=utf-8",
-  dataType:"json"
-});
-/*
-          $.post('/hunts/new', obj, function(data, textStatus, jqXHR) {
-              console.log(data);
-             //on success, add stuff to list 
-          });
-*/
+            var obj = {
+                name: "Title",
+                desc: "Description",
+                tags:[],
+                places:['id1', 'id2']
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/hunts/new',
+                data: str_obj,
+                success: function(data) { console.log(data); },
+                contentType:"application/json; charset=utf-8",
+                dataType:"json"
+            });
         </script>
 </body>
 </html>

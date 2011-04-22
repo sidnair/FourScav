@@ -105,9 +105,14 @@ class Hunts(object):
         cl = cherrypy.request.headers['Content-Length']
         rawbody = cherrypy.request.body.read(int(cl))
         obj = json.loads(rawbody)
-        return json.dumps(obj)
-
-        return jsonText
+        if "name" in obj and "places" in obj and "desc" in obj:
+            pass
+        else:
+            return json.dumps({'status':'fail', \
+                                   'data':'Please enter all required params', \
+                                   'param':key \
+                                   })
+        '''
         for val,key in [(name,0), (desc,1), (places,2)]:
 
             if not val:
@@ -115,6 +120,7 @@ class Hunts(object):
                                    'data':'Please enter all required params', \
                                    'param':key \
                                    })
+        '''
         cookie = cherrypy.request.cookie
         token = cookie['token'].value
         user_collection = db.Users

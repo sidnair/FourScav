@@ -48,15 +48,16 @@ class Auth(object):
                 pass
             else:
                 #updates with a new token
-                user_collection.update({"userid":userid},{"$set":{"token":token}})
+                user_collection.update({"userid":userid},{"$set":{"token":token}},safe=True)
 
         else:
-            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[]})
+            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[]},safe=True)
 
         #set cookie
         cookie = cherrypy.response.cookie
 
         cookie['token'] = token
+        cookie['token']['path'] = '/'
         cookie['token']['max-age'] = 3600
 
         #do we want to save first name? last name? username?
@@ -101,72 +102,73 @@ class User(object):
     name.exposed = True
 
 class Hunts(object):
-    def new(self):
-        cl = cherrypy.request.headers['Content-Length']
-        rawbody = cherrypy.request.body.read(int(cl))
-        obj = json.loads(rawbody)
-        if "name" in obj and "places" in obj and "desc" in obj:
-            pass
-        else:
-            return json.dumps({'status':'fail', \
-                                   'data':'Please enter all required params', \
-                                   'param':key \
-                                   })
-        '''
-        for val,key in [(name,0), (desc,1), (places,2)]:
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
 
-            if not val:
-                return json.dumps({'status':'fail', \
-                                   'data':'Please enter all required params', \
-                                   'param':key \
-                                   })
-        '''
+    def new(self):
+
+        #this does the json parsing manually
+        #cl = cherrypy.request.headers['Content-Length']
+        #rawbody = cherrypy.request.body.read(int(cl))
+        #obj = json.loads(rawbody)
+        #return json.dumps(obj)
+        data = cherrypy.request.json
+
+        for val in ["name","places","desc"]:
+            if val in data and data[val]:
+                pass
+            else:
+                return {'status':'fail', \
+                                       'data':'Please enter all required params', \
+                                       'param':val \
+                                       }
+        tags = []
+        name = data['name']
+        places = data['places']
+        desc = data['desc']
+        if "tags" in data:
+            tags = data["tags"]
+                
         cookie = cherrypy.request.cookie
         token = cookie['token'].value
         user_collection = db.Users
         usr = user_collection.find_one({"token":token})
-
         venues = [(place,[]) for place in places]
         new_hunt = {"users":[usr["userid"]],"venues":venues,"title":name,"rankings":[],"owner":usr["userid"]}
-
         hunts_collection = db.Hunts
         try:
             hunts_collection.insert(new_hunt,safe=True)
-            return json.dumps({'status':'ok',"data":new_hunt})
+            del new_hunt['_id']
+            return {'status':'ok',"data":new_hunt}
         except pymongo.errors.OperationFailure:
-            return json.dumps({'status':'fail', \
+            return {'status':'fail', \
                                    'data':'Failed to insert' \
-                                   })
+                                   }
+
+
     new.exposed = True
 
     def bullshit(self):
         tmp = '''
-<html> <head><title></title></head>
+<html> <head><title>Sup</title></head>
 <body>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
         <script>
-          var obj = {
-              name: "Title",
-              desc: "Description",
-              tags:[],
-              places:['id1', 'id2']
-          };
-          str_obj = JSON.stringify(obj);
-          simple_obj = { name: "name", desc: "desc" };
-$.ajax({
-  type: 'POST',
-  url: '/hunts/new',
-  data: str_obj,
-  success: function(data) { console.log('here'); console.log(data); },
-  contentType:"application/json; charset=utf-8",
-  dataType:"json"
-});
-/*
-          $.post('/hunts/new', obj, function(data, textStatus, jqXHR) {
-              console.log(data);
-             //on success, add stuff to list 
-          });
-*/
+            var obj = JSON.stringify({
+                name: "Title",
+                desc: "Description",
+                tags:[],
+                places:['id1', 'id2']
+            });
+            $.ajax({
+                type: 'POST',
+                url: '/hunts/new',
+                data: obj,
+                success: function(data) { console.log(data); },
+                contentType:"application/json; charset=utf-8",
+                dataType:"json"
+            });
         </script>
 </body>
 </html>
@@ -180,24 +182,65 @@ $.ajax({
         if id == "":
             return "Empty id"
         if action == "get":
-            return "getting name"
+            #reach into mongo and get the hunt
+            hunt_collection = db.Hunts #fetches a collection from mongo
+            cur_hunt = hunt_collection.find_one({"_id":id}) #get the specified hunt
+            return json.dumps(str(cur_hunt))
         elif action == "join":
+            #add member to hunt
+            #this entails modifying hunt and member
+            cookie = cherrypy.request.cookie
+            token = cookie['token'].value
+
+            user_collection = db.Users #fetches a collection from mongo
+            user_collection.update({"token":token},{"$push":{"hunts":id}},safe=True)
+            user = user_collection.find_one({"token":token})
+
+            hunt_collection = db.Hunts #fetches a collection from mongo
+            hunt_collection.update({"_id":id},{"$push":{"users":user["userid"]}},safe=True)
+
             return "joining hunt"
+
+        #do we even want this functionality?
+        '''
         elif action == "remove_tag":
+            #reach into mongo and remove tag
             if foursq == "":
                 return "need to give me a foursquare id"
+
             return "removing tag"
+
         elif action == "add_tag":
+            #reach into mongo and add tag
             if foursq == "":
                 return "need to give me a foursquare id"
             return "adding tag"
+        '''
+
         elif action == "remove_place":
+            #reach into mongo and remove place
             if foursq == "":
                 return "need to give me a foursquare id"
+
+            cookie = cherrypy.request.cookie
+            token = cookie['token'].value
+
+            user_collection = db.Users #fetches a collection from mongo
+            user_collection.update({"hunts.hunt_id":id},{"$pull":{"hunts.venues":foursq}},safe=True)
+
+            hunt_collection = db.Hunts #fetches a collection from mongo
+            hunt_collection.update({"_id":id},{"$pull":{"venues":foursq}},safe=True)
+            
             return "removing placing"
         elif action == "add_place":
+            #reach into mongo and add place
             if foursq == "":
                 return "need to give me a foursquare id"
+
+            hunt_collection = db.Hunts #fetches a collection from mongo
+            #inserts a new place in a hunt
+            hunt_collection.update({"_id":id},{"$push":{"venues":foursq}},safe=True)
+
             return "adding place"
         else:
             return "bad action!"
@@ -206,8 +249,20 @@ $.ajax({
     default.exposed = True
 
 class Venues(object):
-    def search(self):
-        return "searching"
+    def search(self,query="",lng=40.7,lat=-74):
+        "https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
+
+        authDict = {}
+        authDict["client_id"] = "DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00"
+        authDict["client_secret"] = "MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE"
+        authDict["lng"] = lng
+        authDict["lat"] = lat
+        authDict["query"] = query
+        
+        urlencoding = urllib.urlencode(authDict)
+        req = urllib2.urlopen("https://api.foursquare.com/v2/venues/search",urlencoding)
+        return req
+
     search.exposed = True
 
 class Index(object):

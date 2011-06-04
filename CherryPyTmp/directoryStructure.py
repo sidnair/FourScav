@@ -198,24 +198,26 @@ class Hunts(object):
 
             hunt_collection = db.Hunts #fetches a collection from mongo
             hunt_collection.update({"_id":id},{"$push":{"users":user["userid"]}},safe=True)
+            '''
+            elif action == "remove_tag":
+            #reach into mongo and remove tag
+            if foursq == "":
+            return "need to give me a foursquare id"
+            
+            return "removing tag"
+            
+            elif action == "add_tag":
+            #reach into mongo and add tag
+            if foursq == "":
+            return "need to give me a foursquare id"
+            return "adding tag"
+            '''
+
+
 
             return "joining hunt"
 
         #do we even want this functionality?
-        '''
-        elif action == "remove_tag":
-            #reach into mongo and remove tag
-            if foursq == "":
-                return "need to give me a foursquare id"
-
-            return "removing tag"
-
-        elif action == "add_tag":
-            #reach into mongo and add tag
-            if foursq == "":
-                return "need to give me a foursquare id"
-            return "adding tag"
-        '''
 
         elif action == "remove_place":
             #reach into mongo and remove place

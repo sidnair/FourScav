@@ -97,7 +97,8 @@ fs.loadListDisplay = function(listId) {
  * Allows for inline editing.
  *
  * node: should be jQuery wrapped DOM element
- * type: html type of the element
+ * type: html type of the element you want to display. This should be input or
+ * textarea.
  * holderText (optional): text to display when someone clicks on the text to
  * edit.
  *
@@ -106,34 +107,37 @@ fs.loadListDisplay = function(listId) {
 fs.inlineEdit = function(node, type, holderText) {
   var originalHtml = node.html(),
       originalText = node.text(),
-      options = $('<' + type + '>' + '</' + type + '>');
+      editableNode = $('<' + type + '>' + '</' + type + '>');
   holderText = holderText || originalText;
-  options.val(originalText);
+  editableNode.val(originalText);
   node.html('');
-  node.append(options);
+  node.append(editableNode);
   //TODO - add cancel button
   //TODO - add done button
+  //only add listener for enter to input -- don't add to textarea since they
+  //should be able to make multiline edits
   if(type === 'input') {
-    options.keydown(function(e) {
+    editableNode.keydown(function(e) {
       if(e.keyCode === 13) {
-        options.blur();
+        editableNode.blur();
       }
     });
   }
-  options.blur(function() {
-    if(options.val() === '') {
-      options.val(holderText);
+  editableNode.blur(function() {
+    //if it becomes blank, they can't edit it any more
+    if(editableNode.val() === '') {
+      editableNode.val(holderText);
     }
-    node.html(originalHtml.replace(originalText, options.val()));
+    node.html(originalHtml.replace(originalText, editableNode.val()));
     node.remove(type);
     node.one('click', function() { fs.inlineEdit(node, type, holderText); });
   });
-  options.focus(function() {
-      if(originalText === holderText) {
-        options.val('');
-      }
+  editableNode.focus(function() {
+    if(originalText === holderText) {
+      editableNode.val('');
+    }
   });
-  options.focus();
+  editableNode.focus();
 };
 
 fs.inlineHover = function(node) {

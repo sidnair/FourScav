@@ -5,10 +5,9 @@ fs.userLocation = {};
 //ACTUALLY LOAD THIS
 fs.userLists = { };
 
-
 //SANITIZE DATA
 fs.loadLists = function(serverLists) {
-  for(var i = 0, l = serverLists.length; i < l; i++) {
+  for(var i = 0, len = serverLists.length; i < len; i++) {
     var currentServerList = serverLists[i];
     var formattedList = {};
     formattedList.id = currentServerList._id;
@@ -140,7 +139,7 @@ fs.inlineHover = function(node) {
 }
 
 fs.loadMaps = function() {
-  var newyork = new google.maps.LatLng(fs.NEW_YORK_LAT, fs.NEW_YORK_LNG);
+  var newyork = new google.maps.LatLng(fs.maps.NEW_YORK_LAT, fs.maps.NEW_YORK_LNG);
   var myOptions = {
     zoom: 14,
     center: newyork,

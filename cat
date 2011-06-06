@@ -1,1 +1,0 @@
-./start.py:		hostname = "https://api.foursquare.com/v2/venues/search?limit=10&query=" + web.input().query+ "&ll=" + web.input().lat + "," + web.input().long +  "&oauth_token=" + session.token

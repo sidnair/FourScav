@@ -304,7 +304,7 @@ board_conf = \
          },
     '/index.html':
         {'tools.staticfile.on':True,
-         'tools.staticfile.filename':'static/index.html'
+         'tools.staticfile.filename':'index.html'
 
             }
     }

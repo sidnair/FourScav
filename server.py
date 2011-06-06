@@ -1,10 +1,13 @@
 import cherrypy
 import urllib2
 import urllib
+import os
+import sys
 import json
 import pymongo
 from pymongo import Connection
 
+base = os.path.abspath(os.path.dirname(sys.argv[0]))
 userID = 'admin'
 pwd =  'mangolassi'
 host = 'flame.mongohq.com'
@@ -273,5 +276,47 @@ class Index(object):
     auth = Auth()
     hunts = Hunts()
 
-cherrypy.quickstart(Index(),'/','server.conf')
+
+#Server configuration
+site_conf = \
+    {'server.socket_host': '127.0.0.1',
+     'server.socket_port': 8080,
+     'error_page.404': os.path.join(base, "static/error.html")
+    }
+
+
+cherrypy.config.update(site_conf)
+
+#App configuration
+board_conf = \
+    {
+    '/':
+        {
+            'tools.staticdir.root':base,
+            'tools.staticfile.root':base
+            },
+    '/static':
+        {'tools.staticdir.on':True,
+         'tools.staticdir.dir':'static',
+         'tools.staticdir.content_types': {'png': 'image/png',
+                                           'css': 'text/css',
+                                           'js':'application/javascript',}
+         },
+    '/index.html':
+        {'tools.staticfile.on':True,
+         'tools.staticfile.filename':'static/index.html'
+
+            }
+    }
+
+'''
+    #The key 'database' is for book keeping and as of now doesnt effect anything
+    'database': 
+        {'type': 'mongodb',
+         'host': 'localhost',
+         'port': 0000,
+        },
+'''
+
+cherrypy.quickstart(Index(),'/',config=board_conf)
 

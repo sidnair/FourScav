@@ -1,6 +1,5 @@
 //top-level name for the app
 var fs = {};
-fs.userLocation = {};
 
 //ACTUALLY LOAD THIS
 fs.userLists = { };
@@ -18,7 +17,11 @@ fs.loadLists = function(serverLists) {
   }
 }
 
+/* Used to store information related to the maps display. This includes user
+ * location and map marker information
+ */
 fs.maps = {};
+fs.maps.userLocation = {};
 fs.maps.storedMarkers = [];
 fs.maps.NEW_YORK_LAT = 40.69847032728747;
 fs.maps.NEW_YORK_LNG = -73.9514422416687;
@@ -160,14 +163,14 @@ fs.loadMaps = function() {
   //use html5 geolocation if possible - otherwise, it stays at default of new york
   if(navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      fs.userLocation.lat = position.coords.latitude;
-      fs.userLocation.lng = position.coords.longitude;
+      fs.map.userLocation.lat = position.coords.latitude;
+      fs.map.userLocation.lng = position.coords.longitude;
       initialLocation = new google.maps.LatLng(fs.userLocation.lat, fs.userLocation.lng);
       map.setCenter(initialLocation);
     });
   } else {
-    fs.userLocation.lat = fs.NEW_YORK_LAT;
-    fs.userLocation.lng = fs.NEW_YORK_LNG;
+    fs.map.userLocation.lat = fs.NEW_YORK_LAT;
+    fs.maps.userLocation.lng = fs.NEW_YORK_LNG;
   }
   fs.map = map;
 };
@@ -183,8 +186,8 @@ fs.searchVenue = function(query) {
   }
   $.post('/venues/search', {
       query:query,
-      lat:fs.userLocation.lat,
-      'long':fs.userLocation.lng
+      lat:fs.maps.userLocation.lat,
+      'long':fs.maps.userLocation.lng
   }, function(data, textStatus, jqXHR) {
     var agg_results = [];
     var k = 0;

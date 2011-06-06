@@ -1,15 +1,20 @@
 //top-level name for the app
 var fs = {};
 fs.userLists = {};
+fs.ui = {};
+
+fs.ui.displayError = function(msg) {
+  alert(msg);
+};
 
 //TODO: SANITIZE DATA
 fs.loadLists = function(serverLists) {
   function formatList() {
     return {
-      id: currentServerList._id;
-      desc: currentServerList.desc;
-      name: currentServerList.name;
-      places: currentServerList.places;
+      id: currentServerList._id,
+      desc: currentServerList.desc,
+      name: currentServerList.name,
+      places: currentServerList.places
     };
   }
   $.each(serverLists, function(ind, el) {
@@ -35,7 +40,7 @@ fs.maps = {
         element.setVisible(false);
     });
     fs.maps.storedMarkers = [];
-  }
+  },
 
   //TODO: see old implementation, make sure the changes are okay
   /*
@@ -64,8 +69,7 @@ fs.maps = {
       infoWindow.open(map, marker);
     }); 
     fs.maps.storedMarkers.push(marker);
-  };
-
+  }
 };
 
 fs.loadListDisplay = function(listId) {
@@ -267,11 +271,15 @@ $(document).ready(function() {
           fullId = $('td', element)[1].id
           enteredPlaces.push(fullId);
         });
+        if(enteredPlaces.length === 0) {
+          fs.ui.displayError('You must enter places');
+          return;
+        }
         var obj = {
-            name:$('#newListTitle').text(),
-            desc:$('#newListDescription').text(),
-            tags:[],
-            places:enteredPlaces
+            name: $('#newListTitle').text(),
+            desc: $('#newListDescription').text(),
+            tags: [],
+            places: enteredPlaces
         };
         $.post('/list/new', obj, function(data, textStatus, jqXHR) {
             console.log(data);
@@ -333,8 +341,8 @@ $(document).ready(function() {
 
   function loadMaps() {
     var newyork = new google.maps.LatLng(fs.maps.NEW_YORK_LAT,
-        fs.maps.NEW_YORK_LNG),
-    var myOptions = {
+          fs.maps.NEW_YORK_LNG),
+        myOptions = {
       zoom: 14,
       center: newyork,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -354,9 +362,9 @@ $(document).ready(function() {
     //use html5 geolocation if possible - otherwise, it stays at default of new york
     if(navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
-        fs.map.userLocation.lat = position.coords.latitude;
-        fs.map.userLocation.lng = position.coords.longitude;
-        initialLocation = new google.maps.LatLng(fs.userLocation.lat, fs.userLocation.lng);
+        fs.maps.userLocation.lat = position.coords.latitude;
+        fs.maps.userLocation.lng = position.coords.longitude;
+        initialLocation = new google.maps.LatLng(fs.maps.userLocation.lat, fs.maps.userLocation.lng);
         map.setCenter(initialLocation);
       });
     } else {
@@ -369,7 +377,7 @@ $(document).ready(function() {
   makeListDropDown(fs.userLists);
   buildListCreater();
   //load the first list
-  loadListDisplay($('#listChoice option')[0].id);
+  fs.loadListDisplay($('#listChoice option')[0].id);
   loadMaps();
   addSearchEvents();
   addSubmitEvent();

@@ -1,0 +1,7 @@
+*.swp
+*~
+sessions
+*\#*\#
+api/web
+*.pyc
+*/server.conf

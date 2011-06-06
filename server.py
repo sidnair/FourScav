@@ -64,7 +64,7 @@ class Auth(object):
         cookie['token']['max-age'] = 3600
 
         #do we want to save first name? last name? username?
-        
+        raise cherrypy.InternalRedirect('../main.html')       
         return dicty["response"]["user"]["firstName"]
 
 
@@ -327,6 +327,11 @@ board_conf = \
         {
             'tools.staticfile.on':True,
             'tools.staticfile.filename':'static/index.html'
+            },
+    '/main.html':
+        {
+            'tools.staticfile.on':True,
+            'tools.staticfile.filename':'static/main.html'
             }
     }
 

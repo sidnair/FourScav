@@ -273,9 +273,5 @@ class Index(object):
     auth = Auth()
     hunts = Hunts()
 
-    def index(self):
-        return "hello world"
-    index.exposed = True
-
-cherrypy.quickstart(Index())
+cherrypy.quickstart(Index(),'/','server.conf')
 

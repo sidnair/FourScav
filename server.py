@@ -293,7 +293,7 @@ board_conf = \
     '/':
         {
             'tools.staticdir.root':base,
-            'tools.staticfile.root':base
+            'tools.staticfile.root':base,
             },
     '/static':
         {'tools.staticdir.on':True,
@@ -304,29 +304,29 @@ board_conf = \
          },
     '/css':
         {'tools.staticdir.on':True,
-         'tools.staticdir.dir':'css',
+         'tools.staticdir.dir':'static/css',
          'tools.staticdir.content_types': {'png': 'image/png',
                                            'css': 'text/css',
                                            'js':'application/javascript',}
          },
     '/images':
         {'tools.staticdir.on':True,
-         'tools.staticdir.dir':'images',
+         'tools.staticdir.dir':'static/images',
          'tools.staticdir.content_types': {'png': 'image/png',
                                            'css': 'text/css',
                                            'js':'application/javascript',}
          },
     '/js':
         {'tools.staticdir.on':True,
-         'tools.staticdir.dir':'js',
+         'tools.staticdir.dir':'static/js',
          'tools.staticdir.content_types': {'png': 'image/png',
                                            'css': 'text/css',
                                            'js':'application/javascript',}
          },
-    '/':
-        {'tools.staticfile.on':True,
-         'tools.staticfile.filename':'index.html'
-
+    '/index.html':
+        {
+            'tools.staticfile.on':True,
+            'tools.staticfile.filename':'static/index.html'
             }
     }
 

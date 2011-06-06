@@ -1,66 +1,75 @@
 //top-level name for the app
 var fs = {};
+fs.userLists = {};
 
-//ACTUALLY LOAD THIS
-fs.userLists = { };
-
-//SANITIZE DATA
+//TODO: SANITIZE DATA
 fs.loadLists = function(serverLists) {
-  for(var i = 0, len = serverLists.length; i < len; i++) {
-    var currentServerList = serverLists[i];
-    var formattedList = {};
-    formattedList.id = currentServerList._id;
-    formattedList.desc = currentServerList.desc;
-    formattedList.name = currentServerList.name;
-    formattedList.places = currentServerList.places;
-    fs.userLists[formattedList.id] = formattedList;
+  function formatList() {
+    return {
+      id: currentServerList._id;
+      desc: currentServerList.desc;
+      name: currentServerList.name;
+      places: currentServerList.places;
+    };
   }
-}
-
-/* Used to store information related to the maps display. This includes user
- * location and map marker information
- */
-fs.maps = {};
-fs.maps.userLocation = {};
-fs.maps.storedMarkers = [];
-fs.maps.NEW_YORK_LAT = 40.69847032728747;
-fs.maps.NEW_YORK_LNG = -73.9514422416687;
-fs.maps.clearMarkers = function() {
-  for(var m in fs.maps.storedMarkers) {
-    fs.maps.storedMarkers[m].setVisible(false);
-  }
-  fs.maps.storedMarkers = [];
-}
-
-fs.maps.addMarker = function(map, lat, lng, name, desc) {
-  var loc = new google.maps.LatLng(lat, lng);
-  var marker = new google.maps.Marker({
-      position: loc, 
-      map: map, 
-      title: name
+  $.each(serverLists, function(ind, el) {
+      var formatted = formatList(el);
+      fs.userLists(formatted.id) = formatted;
   });
-  var infoWindow = new google.maps.InfoWindow({ 
-    content: name + ' - ' + desc
-  }); 
-  google.maps.event.addListener(marker, 'click', function() { 
-    infoWindow.open(map, marker); 
-  }); 
-  fs.maps.storedMarkers.push(marker);
 };
 
-fs.makeListDropDown = function(list) {
-  $.each(list, function(key, element) {
-      $('#listChoice').append('<option id="' + element.id + '">' + element.name  + '</option>');
-  });
-  $('#listChoice').append('<option id="new">Make New Hunt!</option>');
-  $('#listChoice').change(function(e) {
-    fs.loadListDisplay($('option:selected', this)[0].id);
-  });
-  $('#listChoice').selectmenu({style:'dropdown', maxHeight:350, width: 200});
-}
+/* 
+ * Used to store information related to the maps display. This includes user
+ * location and map marker information
+ */
+fs.maps = {
+  userLocation: {},
+  storedMarkers: [],
+  NEW_YORK_LAT: 40.69847032728747,
+  NEW_YORK_LNG: -73.9514422416687,
+  /*
+   * Remove the markers from the map. The markers will no longer be stored.
+   */
+  clearMarkers: function() {
+    $.each(fs.maps.storedMarkers, function(index, element) {
+        element.setVisible(false);
+    });
+    fs.maps.storedMarkers = [];
+  }
+
+  //TODO: see old implementation, make sure the changes are okay
+  /*
+   * Add a marker to the map. Pass a hash with the arguments:
+   *  lat: latitutude
+   *  lng: longitude
+   *  name: name..
+   *  desc: description
+   */
+  addMarker: function(args) {
+    var lat = args.lat,
+        lng = args.lng,
+        name = args.name,
+        desc = args.desc,
+        map = fs.maps.map,
+        loc = new google.maps.LatLng(lat, lng),
+        marker = new google.maps.Marker({
+            position: loc, 
+            map: map, 
+            title: name
+        }),
+        infoWindow = new google.maps.InfoWindow({ 
+          content: name + ' - ' + desc
+        }); 
+    google.maps.event.addListener(marker, 'click', function() { 
+      infoWindow.open(map, marker);
+    }); 
+    fs.maps.storedMarkers.push(marker);
+  };
+
+};
 
 fs.loadListDisplay = function(listId) {
-  //it is an existing list
+  //an existing list
   if(fs.userLists[listId]) {
     $('#newListMaker').hide();
     $('#activeListTitle').html(fs.userLists[listId].name);
@@ -73,7 +82,7 @@ fs.loadListDisplay = function(listId) {
     $('#standings').show();
     */
   } else {
-    //it is a new list
+    //new list
     $('#activeListInfo').hide();
     $('#newListMaker').show();
     $('#searchAndStandings').show();
@@ -82,27 +91,23 @@ fs.loadListDisplay = function(listId) {
     $('#search').show();
     */
   }
-}
+};
 
-fs.buildListCreater = function(title, display) {
-  var title = $('#newListTitle');
-  title.html('<h1>My New List</h1>')
-  //fs.inlineEdit(title, $('#newListMaker'), 'input');
-      .one('click', function() { fs.inlineEdit(title, 'input'); });
-  fs.inlineHover(title);
-  var desc = $('#newListDescription');
-  desc.html('<p>Enter a description here.</p>')
-  //fs.inlineEdit(desc, $('#newListMaker'), 'input');
-      .one('click', function() { fs.inlineEdit(desc, 'textarea'); })
-  fs.inlineHover(desc);
-  $('button').button();
-}
-
+/*
+ * Allows for inline editing.
+ *
+ * node: should be jQuery wrapped DOM element
+ * type: html type of the element
+ * holderText (optional): text to display when someone clicks on the text to
+ * edit.
+ *
+ * TODO: add cancel and done button
+ */
 fs.inlineEdit = function(node, type, holderText) {
-  var originalHtml = node.html();
-  var originalText = node.text();
+  var originalHtml = node.html(),
+      originalText = node.text(),
+      options = $('<' + type + '>' + '</' + type + '>');
   holderText = holderText || originalText;
-  var options = $('<' + type + '>' + '</' + type + '>');
   options.val(originalText);
   node.html('');
   node.append(options);
@@ -129,7 +134,7 @@ fs.inlineEdit = function(node, type, holderText) {
       }
   });
   options.focus();
-}
+};
 
 fs.inlineHover = function(node) {
   var oldColor = node.attr('background') || 'white';
@@ -139,44 +144,6 @@ fs.inlineHover = function(node) {
   node.mouseleave(function() {
       $(this).animate({background: oldColor }, 'fast');
   });
-}
-
-fs.loadMaps = function() {
-  var newyork = new google.maps.LatLng(fs.maps.NEW_YORK_LAT, fs.maps.NEW_YORK_LNG);
-  var myOptions = {
-    zoom: 14,
-    center: newyork,
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    zoomControlOptions: {
-      position: google.maps.ControlPosition.RIGHT_CENTER
-    },
-    mapTypeControl: false,
-    panControlOptions: {
-      position: google.maps.ControlPosition.RIGHT_CENTER
-    },
-    streetViewControlOptions: {
-      position: google.maps.ControlPosition.RIGHT_CENTER
-    }
-  }
-
-  var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-  //use html5 geolocation if possible - otherwise, it stays at default of new york
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      fs.map.userLocation.lat = position.coords.latitude;
-      fs.map.userLocation.lng = position.coords.longitude;
-      initialLocation = new google.maps.LatLng(fs.userLocation.lat, fs.userLocation.lng);
-      map.setCenter(initialLocation);
-    });
-  } else {
-    fs.map.userLocation.lat = fs.NEW_YORK_LAT;
-    fs.maps.userLocation.lng = fs.NEW_YORK_LNG;
-  }
-  fs.map = map;
-};
-
-fs.loadFirstList = function() {
-  fs.loadListDisplay($('#listChoice option')[0].id);
 };
 
 fs.searchVenue = function(query) {
@@ -208,13 +175,13 @@ fs.searchVenue = function(query) {
       fs.renderResults(agg_results);
     }
   });
-}
+};
 
 fs.renderListPlaces = function(places, list) {
   $('#activeListTable').html('');
   fs.renderResults(places, $('#activeListTable'), true);
  // for(var i = 0, l = places.length; i < l; i++) {
-   // fs.addMarker(places[i], places[i].lat, places[i].lng, places[i].name, places[i].desc);
+   // fs.addMarker(places[i], places[i].lat, elaces[i].lng, places[i].name, places[i].desc);
     //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
 //  }
 };
@@ -256,7 +223,7 @@ fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
       })();
     }
   }
-}
+};
 
 fs.addResult = function(resultNode, oldId) {
   var clonedNode = resultNode.clone();
@@ -273,56 +240,133 @@ fs.addResult = function(resultNode, oldId) {
         clonedNode.remove();
     });
   })();
-}
+};
 
-fs.addSearchEvents = function() {
-  var runSearch = function() { fs.searchVenue($('#searchBar').val()); };
-  $('#searchBar').keydown(function(e) {
-    if(e.keyCode === 13) {
-      runSearch();
-    }
-  });
-  $('#searchButton').click(function(e) {
-    runSearch();
-  });
-}
-
-fs.addSubmitEvent = function() {
-  $('#submitListButton').click(function() {
-      var enteredPlaces = [];
-      $('#newListTable tr').each(function(index, element) {
-        fullId = $('td', element)[1].id
-        enteredPlaces.push(fullId);
-      });
-      var obj = {
-          name:$('#newListTitle').text(),
-          desc:$('#newListDescription').text(),
-          tags:[],
-          places:enteredPlaces
-      };
-      $.post('/list/new', obj, function(data, textStatus, jqXHR) {
-          console.log(data);
-         //on success, add stuff to list 
-      });
-      /*
-      $('#newListTable tr').each(function(index, element) {
-        console.log($('td span', element));
-        $('td span', element).each(function(i, e) {
-          var fullId = e.id;
-          if(fullId && fullId.indexOf('ButtonRemove') > 0) {
-            enteredPlaces.push(fullId.replace('ButtonRemove', ''));
-          }
-        });
-      });
-      */
-  });
-}
 
 $(document).ready(function() {
-  fs.makeListDropDown(fs.userLists);
-  fs.buildListCreater();
-  fs.loadFirstList();
-  fs.loadMaps();
-  fs.addSearchEvents();
-  fs.addSubmitEvent();
+  function addSearchEvents() {
+    var runSearch = function() { fs.searchVenue($('#searchBar').val()); };
+    $('#searchBar').keydown(function(e) {
+      if(e.keyCode === 13) {
+        runSearch();
+      }
+    });
+    $('#searchButton').click(function(e) {
+      runSearch();
+    });
+  }
+
+  function addSubmitEvent() {
+    $('#submitListButton').click(function() {
+        var enteredPlaces = [];
+        $('#newListTable tr').each(function(index, element) {
+          fullId = $('td', element)[1].id
+          enteredPlaces.push(fullId);
+        });
+        var obj = {
+            name:$('#newListTitle').text(),
+            desc:$('#newListDescription').text(),
+            tags:[],
+            places:enteredPlaces
+        };
+        $.post('/list/new', obj, function(data, textStatus, jqXHR) {
+            console.log(data);
+           //on success, add stuff to list 
+        });
+        /*
+        $('#newListTable tr').each(function(index, element) {
+          console.log($('td span', element));
+          $('td span', element).each(function(i, e) {
+            var fullId = e.id;
+            if(fullId && fullId.indexOf('ButtonRemove') > 0) {
+              enteredPlaces.push(fullId.replace('ButtonRemove', ''));
+            }
+          });
+        });
+        */
+    });
+  }
+
+  /* Makes a select menu out of the list provided. The list elements should have 
+   * id and name properties. This represents the list of hunts in which the user
+   * is participating. The option to create a new hunt is automatically added.
+   */
+  function makeListDropDown(list) {
+    //TODO: fetch list from server
+    //$.ajax
+    //TODO: this will be the callback
+    (function() {
+      //store data in fs.userLists
+      buildDropDownFromList(fs.userLists);
+    })();
+
+    function buildDropDownFromList() {
+      $.each(list, function(key, element) {
+          $('#listChoice').append('<option id="' + element.id + '">' + element.name
+              + '</option>');
+      });
+      $('#listChoice').append('<option id="new">Make New Hunt!</option>');
+      $('#listChoice').change(function(e) {
+        fs.loadListDisplay($('option:selected', this)[0].id);
+      });
+      $('#listChoice').selectmenu({style:'dropdown', maxHeight:350, width: 200});
+    };
+  }
+
+  function buildListCreater(title, display) {
+    var title = $('#newListTitle');
+    title.html('<h1>My New List</h1>')
+    //fs.inlineEdit(title, $('#newListMaker'), 'input');
+        .one('click', function() { fs.inlineEdit(title, 'input'); });
+    fs.inlineHover(title);
+    var desc = $('#newListDescription');
+    desc.html('<p>Enter a description here.</p>')
+    //fs.inlineEdit(desc, $('#newListMaker'), 'input');
+        .one('click', function() { fs.inlineEdit(desc, 'textarea'); })
+    fs.inlineHover(desc);
+    $('button').button();
+  }
+
+  function loadMaps() {
+    var newyork = new google.maps.LatLng(fs.maps.NEW_YORK_LAT,
+        fs.maps.NEW_YORK_LNG),
+    var myOptions = {
+      zoom: 14,
+      center: newyork,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_CENTER
+      },
+      mapTypeControl: false,
+      panControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_CENTER
+      },
+      streetViewControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_CENTER
+      }
+    };
+
+    var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    //use html5 geolocation if possible - otherwise, it stays at default of new york
+    if(navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        fs.map.userLocation.lat = position.coords.latitude;
+        fs.map.userLocation.lng = position.coords.longitude;
+        initialLocation = new google.maps.LatLng(fs.userLocation.lat, fs.userLocation.lng);
+        map.setCenter(initialLocation);
+      });
+    } else {
+      fs.map.userLocation.lat = fs.NEW_YORK_LAT;
+      fs.maps.userLocation.lng = fs.NEW_YORK_LNG;
+    }
+    fs.maps.map = map;
+  };
+
+  makeListDropDown(fs.userLists);
+  buildListCreater();
+  //load the first list
+  loadListDisplay($('#listChoice option')[0].id);
+  loadMaps();
+  addSearchEvents();
+  addSubmitEvent();
 });

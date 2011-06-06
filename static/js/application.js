@@ -5,57 +5,6 @@ fs.userLocation = {};
 //ACTUALLY LOAD THIS
 fs.userLists = { };
 
-fs.storedMarkers = [];
-
-fs.NEW_YORK_LAT = 40.69847032728747;
-fs.NEW_YORK_LNG = -73.9514422416687;
-
-//dummy load
-(function() {
-  //DUMMMY DATA GENERATION
-  list0 = {
-        name: 'Food',
-        id: '023q4q',
-        desc: 'Cool food places of different genres',
-        places: [{
-          name:"Ice Cream Charlies",
-          lat:40.82535184,
-          lng:-74.10937132,
-          categories:[{icon: 'https://foursquare.com/img/categories/food/icecream.png', cat:'Ice Cream Shop'} ]
-        }, {
-          name:"Chipotle Mexican Grill",
-          lat: 40.742054,
-          lng: -74.001246,
-          categories:[{icon:' https://foursquare.com/img/categories/food/default.png', name:'burrito'}]
-        }, {
-          name:"Ippudo",
-          lat:40.730673519047336,
-          lng:-73.99092435836792,
-          categories:[{icon:'https://foursquare.com/img/categories/food/ramen.png', name:'Ramen or Noodle House'}]
-        }]
-  };
-
-  list1 = {
-        name: 'bar',
-        id: '234134sdf',
-        desc: 'lorem ipsum 2'
-  };
-
-  list2 = {
-        name: 'baz',
-        id: '23dasfsa',
-        desc: 'lorem ipsum 3'
-  };
-
-  dummy = [list0, list1, list2];
-
-  for(var i in dummy) {
-    var list = dummy[i];
-    fs.userLists[list.id] = list;
-  }
-
-})();
-
 
 //SANITIZE DATA
 fs.loadLists = function(serverLists) {
@@ -70,15 +19,18 @@ fs.loadLists = function(serverLists) {
   }
 }
 
-fs.clearMarkers = function() {
-  for(var m in fs.storedMarkers) {
-    fs.storedMarkers[m].setVisible(false);
+fs.maps = {};
+fs.maps.storedMarkers = [];
+fs.maps.NEW_YORK_LAT = 40.69847032728747;
+fs.maps.NEW_YORK_LNG = -73.9514422416687;
+fs.maps.clearMarkers = function() {
+  for(var m in fs.maps.storedMarkers) {
+    fs.maps.storedMarkers[m].setVisible(false);
   }
-  fs.storedMarkers = [];
-  //remove from fs.storedMarkers
+  fs.maps.storedMarkers = [];
 }
 
-fs.addMarker = function(map, lat, lng, name, desc) {
+fs.maps.addMarker = function(map, lat, lng, name, desc) {
   var loc = new google.maps.LatLng(lat, lng);
   var marker = new google.maps.Marker({
       position: loc, 
@@ -91,7 +43,7 @@ fs.addMarker = function(map, lat, lng, name, desc) {
   google.maps.event.addListener(marker, 'click', function() { 
     infoWindow.open(map, marker); 
   }); 
-  fs.storedMarkers.push(marker);
+  fs.maps.storedMarkers.push(marker);
 };
 
 fs.makeListDropDown = function(list) {
@@ -114,9 +66,6 @@ fs.loadListDisplay = function(listId) {
     $('#activeListInfo').show();
     $('#searchAndStandings').hide();
     $('#activeListTable').html('');
-    if(listId === '023q4q') {
-      fs.renderListPlaces(fs.userLists['023q4q'].places, fs.userLists['023q4q'])
-    }
     /*
     $('#search').hide();
     $('#standings').show();

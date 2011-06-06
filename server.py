@@ -302,7 +302,28 @@ board_conf = \
                                            'css': 'text/css',
                                            'js':'application/javascript',}
          },
-    '/index.html':
+    '/css':
+        {'tools.staticdir.on':True,
+         'tools.staticdir.dir':'css',
+         'tools.staticdir.content_types': {'png': 'image/png',
+                                           'css': 'text/css',
+                                           'js':'application/javascript',}
+         },
+    '/images':
+        {'tools.staticdir.on':True,
+         'tools.staticdir.dir':'images',
+         'tools.staticdir.content_types': {'png': 'image/png',
+                                           'css': 'text/css',
+                                           'js':'application/javascript',}
+         },
+    '/js':
+        {'tools.staticdir.on':True,
+         'tools.staticdir.dir':'js',
+         'tools.staticdir.content_types': {'png': 'image/png',
+                                           'css': 'text/css',
+                                           'js':'application/javascript',}
+         },
+    '/':
         {'tools.staticfile.on':True,
          'tools.staticfile.filename':'index.html'
 

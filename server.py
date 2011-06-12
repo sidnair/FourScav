@@ -88,9 +88,8 @@ class User(object):
         for hunt in user_hunts:
             cur_hunt = hunts_collection.find_one({"huntid":hunt[0]})
             huntjson.append(cur_hunt["json"])
-        hunts['json'] = huntjson
 
-        return json.dumps(hunts)
+        return json.dumps(huntjson)
 
 
     def name(self):

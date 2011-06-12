@@ -154,16 +154,32 @@ fs.inlineHover = function(node) {
   });
 };
 
+/*
+fs.util = {};
+fs.util.mapToGet = function(obj) {
+  var str_arr = ['?'];
+  for(var i in obj) {
+    if(str_arr.length === 1) {
+      str_arr.push([i, '=', obj[i]].join(''));
+    } else {
+      str_arr.push(['&', i, '=', obj[i]].join(''));
+    }
+  }
+  return str_arr.join('');
+};
+*/
+
 fs.searchVenue = function(query) {
   //don't proceed if query is undefined, empty, etc
   if(!query) {
     return;
   }
-  $.post('/venues/search', {
+  $.get('/venues/search', {
       query:query,
       lat:fs.maps.userLocation.lat,
-      'long':fs.maps.userLocation.lng
+      lng:fs.maps.userLocation.lng
   }, function(data, textStatus, jqXHR) {
+    console.log(data);
     var agg_results = [];
     var k = 0;
     var result = $.parseJSON(data);

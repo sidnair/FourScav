@@ -7,7 +7,7 @@ API:
 	user/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json
 	     json is structured like:
-	     {'json':[list of hunts]}
+	     [list of hunts]
 	
 	user/?action=name
 		Assumes cookie is set--gets cookie and returns the user information for the user in json
@@ -35,4 +35,3 @@ API:
 		the json format is on the foursquare website
 		https://developer.foursquare.com/docs/venues/search.html
 
-			

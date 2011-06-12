@@ -274,6 +274,10 @@ class Index(object):
     venues = Venues()
     auth = Auth()
     hunts = Hunts()
+    def default(self):
+        index_t = open('static/index.tmpl', 'r')
+        self.index_template = index_t.read()
+        return str(Template(self.index_template, name_space))
 
 
 #Server configuration

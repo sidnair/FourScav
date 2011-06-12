@@ -110,7 +110,6 @@ class Hunts(object):
     @cherrypy.tools.json_out()
 
     def new(self):
-
         #this does the json parsing manually
         #cl = cherrypy.request.headers['Content-Length']
         #rawbody = cherrypy.request.body.read(int(cl))
@@ -254,19 +253,19 @@ class Hunts(object):
     default.exposed = True
 
 class Venues(object):
-    def search(self,query="",lng=40.7,lat=-74):
+    def search(self,query="",lng="40.7",lat="-74"):
         "https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
 
         authDict = {}
         authDict["client_id"] = "DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00"
         authDict["client_secret"] = "MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE"
-        authDict["lng"] = lng
-        authDict["lat"] = lat
+        authDict["ll"] = lng+","+lat
         authDict["query"] = query
         
         urlencoding = urllib.urlencode(authDict)
-        req = urllib2.urlopen("https://api.foursquare.com/v2/venues/search",urlencoding)
-        return req
+        codestr = "https://api.foursquare.com/v2/venues/search?" + urlencoding
+        req = urllib2.urlopen(codestr)
+        return req.read()
 
     search.exposed = True
 

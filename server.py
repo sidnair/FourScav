@@ -1,4 +1,5 @@
 import cherrypy
+from Cheetah.Template import Template
 import urllib2
 import urllib
 import os
@@ -277,8 +278,8 @@ class Index(object):
     def default(self):
         index_t = open('static/index.tmpl', 'r')
         self.index_template = index_t.read()
-        return str(Template(self.index_template, name_space))
-
+        return str(Template(self.index_template))
+    default.exposed = True
 
 #Server configuration
 site_conf = \

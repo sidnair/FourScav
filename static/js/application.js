@@ -174,7 +174,7 @@ fs.searchVenue = function(query) {
   if(!query) {
     return;
   }
-  $.get('/venues/search', {
+  $.get('/venues/search/', {
       query:query,
       lat:fs.maps.userLocation.lat,
       lng:fs.maps.userLocation.lng

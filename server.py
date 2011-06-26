@@ -63,10 +63,17 @@ class Auth(object):
         else:
             names = []
             if (first_name):
+                stri = ""
+                for elt in first_name:
+                    stri += elt
+                    names.append(stri)
                 names.append(first_name)
             if (last_name):
-                names.append(last_name)
-            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"names":names},safe=True)
+                stri = ""
+                for elt in last_name:
+                    stri += elt
+                    names.append(stri)
+            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"first":first_name,"last":last_name,"names":names},safe=True)
 
         #set cookie
         cookie = cherrypy.response.cookie

@@ -16,6 +16,9 @@ API:
 	Should send users to https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost:8080/auth/
 	Will auth automatically from there
 
+	invite
+		send me json that looks like:
+
   GET
 	user/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json

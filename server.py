@@ -50,6 +50,7 @@ class Auth(object):
         userid = dicty["response"]["user"]["id"]
         first_name = dicty["response"]["user"]["firstName"].lower()
         last_name = dicty["response"]["user"]["lastName"].lower()
+        email =  dicty["response"]["user"]["contact"]["email"]
         user_collection = db.Users
         
         usr = user_collection.find_one({"userid":userid})
@@ -73,7 +74,7 @@ class Auth(object):
                 for elt in last_name:
                     stri += elt
                     names.append(stri)
-            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"first":first_name,"last":last_name,"names":names},safe=True)
+            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"invited":[],"first":first_name,"last":last_name,"names":names,"email":email},safe=True)
 
         #set cookie
         cookie = cherrypy.response.cookie
@@ -88,6 +89,50 @@ class Auth(object):
 
 
     index.exposed = True
+
+class Invite(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+    def default(self):
+        data = cherrypy.request.json
+        if "userid" in data and data["userid"]:
+            if "huntid" in data and data["huntid"]:
+                email_addresses = []
+                if "email" in data and data["email"]:
+                    email_addresses.extend(data["email"])
+                user_collection = db.Users
+                user_collection.update({"userid":{"$in":data["userid"]}},{"$addToSet":{"invited":data["huntid"]}},safe=True)
+                cursor = user_collection.find({"userid":{"$in":data["userid"]}})
+                email_addresses.extend([elt["email"] for elt in cursor])
+                return email(email_addresses,data["huntid"])
+            else:
+                return  {'status':'fail', \
+                             'data':'No hunt name' \
+                             }
+        elif "email" in data and data["email"]:
+            if "huntid" in data and data["huntid"]:
+                return email(data["email"],data["huntid"])
+            else:
+                return email(data["email"])
+        else:
+            return   {'status':'fail', \
+                          'data':'No users or email addresses' \
+                          }
+        return {'status':'ok'}
+
+def email(email_addresses="",huntid=""):
+    if email_addresses:
+        if huntid:
+            message = "Someone has invited you to a game!" + huntid
+            return message
+        else:
+            message = "Would you like to join fourscav?  It's awesome!"
+            return message
+    else:
+        return   {'status':'fail', \
+                          'data':'No email addresses' \
+                          }
 
 
 class User(object):
@@ -117,8 +162,6 @@ class User(object):
         hunts_collection = db.Hunts
 
         user_hunts = user_collection.find_one({"token":token})["hunts"]
-
-
         hunts = {"user_hunts":user_hunts}
 
         huntjson = []
@@ -146,6 +189,21 @@ class Hunts(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
 
+
+    def lookup(self,name=""):
+        if (name):
+            hunt_collection = db.Hunts
+            cursor = hunt_collection.find({"names":{"$all":name.lower().split(" ")}})
+            lst = []
+            for elt in cursor:
+                elt.pop('_id')
+                lst.append(elt)
+            dicty = {"results":lst}
+            return dicty
+        else:
+            return  {'status':'fail', \
+                                   'data':'Empty hunt name' \
+                                   }
     def new(self):
         #this does the json parsing manually
         #cl = cherrypy.request.headers['Content-Length']
@@ -174,7 +232,14 @@ class Hunts(object):
         user_collection = db.Users
         usr = user_collection.find_one({"token":token})
         venues = [(place,[]) for place in places]
-        new_hunt = {"users":[usr["userid"]],"venues":venues,"title":name,"rankings":[],"owner":usr["userid"]}
+        names = []
+        prefixable = name.lower().split(" ")
+        for word in prefixable:
+            stri = ""
+            for letter in word:
+                stri += letter
+                names.append(stri)
+        new_hunt = {"users":[usr["userid"]],"venues":venues,"title":name,"rankings":[],"owner":usr["userid"],"names":names}
         hunts_collection = db.Hunts
         try:
             hunts_collection.insert(new_hunt,safe=True)
@@ -232,7 +297,7 @@ class Hunts(object):
             token = cookie['token'].value
 
             user_collection = db.Users #fetches a collection from mongo
-            user_collection.update({"token":token},{"$push":{"hunts":id}},safe=True)
+            user_collection.update({"token":token},{"$push":{"hunts":id},"$pull":{"invited":id}},safe=True)
             user = user_collection.find_one({"token":token})
 
             hunt_collection = db.Hunts #fetches a collection from mongo
@@ -321,6 +386,7 @@ class Venues(object):
     search.exposed = True
 
 class Index(object):
+    invite = Invite()
     user = User()
     venues = Venues()
     auth = Auth()

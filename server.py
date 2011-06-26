@@ -21,6 +21,10 @@ connection = Connection()
 db = connection['fourscav']
 
 class Auth(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
     def index(self,code=""):
 #        db.authenticate(userID, pwd)
         authDict = {}
@@ -44,7 +48,8 @@ class Auth(object):
         dicty = json.load(req)
 
         userid = dicty["response"]["user"]["id"]
-
+        first_name = dicty["response"]["user"]["firstName"].lower()
+        last_name = dicty["response"]["user"]["lastName"].lower()
         user_collection = db.Users
         
         usr = user_collection.find_one({"userid":userid})
@@ -56,7 +61,12 @@ class Auth(object):
                 user_collection.update({"userid":userid},{"$set":{"token":token}},safe=True)
 
         else:
-            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[]},safe=True)
+            names = []
+            if (first_name):
+                names.append(first_name)
+            if (last_name):
+                names.append(last_name)
+            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"names":names},safe=True)
 
         #set cookie
         cookie = cherrypy.response.cookie
@@ -74,6 +84,25 @@ class Auth(object):
 
 
 class User(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
+    def lookup(self,name=""):
+        if (name):
+            user_collection = db.Users
+            cursor = user_collection.find({"names":{"$all":name.lower().split(" ")}})
+            lst = []
+            for elt in cursor:
+                elt.pop('_id')
+                lst.append(elt)
+            dicty = {"results":lst}
+            return dicty
+        else:
+            return  {'status':'fail', \
+                                   'data':'Empty user name' \
+                                   }
+
     def hunts(self):
         cookie = cherrypy.request.cookie
         token = cookie['token'].value
@@ -254,6 +283,10 @@ class Hunts(object):
     default.exposed = True
 
 class Venues(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
     def search(self,query="",lng="40.7",lat="-74"):
         "https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
 

@@ -29,13 +29,14 @@ class Auth(object):
         authDict["grant_type"] = "authorization_code"
         authDict["redirect_uri"] = "http://localhost:8080/auth/"
         authDict["code"] = code
+        authDict["v"] = "20110525"
         urlencoding = urllib.urlencode(authDict)
         req = urllib2.urlopen("https://foursquare.com/oauth2/access_token",urlencoding)
         dicty = json.load(req)
         token = dicty["access_token"]
         
         
-        get_user_dict = {"oauth_token":token}
+        get_user_dict = {"oauth_token":token, "v":"20110525"}
         urlencoding = urllib.urlencode(get_user_dict)
         
         req = urllib2.urlopen("https://api.foursquare.com/v2/users/self?"+urlencoding)
@@ -259,8 +260,9 @@ class Venues(object):
         authDict = {}
         authDict["client_id"] = "DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00"
         authDict["client_secret"] = "MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE"
-        authDict["ll"] = lng+","+lat
+        authDict["ll"] = lat+","+lng
         authDict["query"] = query
+        authDict["v"] = "20110625"
         
         urlencoding = urllib.urlencode(authDict)
         codestr = "https://api.foursquare.com/v2/venues/search?" + urlencoding

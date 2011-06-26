@@ -1,5 +1,12 @@
 Everything is new again, in cherrypy
 
+BUILD BREAKAGE STATISTICS
+==========================
+              count       total time
+mnn2104         2         ~like forever
+sidnair09       0         0 mins
+==========================
+
 invites JSON -
 {
   huntIds: [],

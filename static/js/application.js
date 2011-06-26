@@ -135,16 +135,18 @@ fs.ui.inlineEdit = function(event, node, type, holderText) {
     node.one('click', function(e) { fs.ui.inlineEdit(e, node, type, holderText); });
   }
 
+  /*
   if ($(event.target).is('button')) {
     restoreInlineListener();
     return;
   }
+  */
   var originalHtml = node.html(),
       originalText = node.text(),
       editableNode = $('<' + type + '>' + '</' + type + '>');
   editableNode.val(originalText);
   node.html('');
-  node.append(editableNode, '<br />', fs.ui.makeButton('Cancel', undoEdits),
+  node.after(editableNode, '<br />', fs.ui.makeButton('Cancel', undoEdits),
       fs.ui.makeButton('Done', saveEdits));
   //only add listener for enter to input -- don't add to textarea since they
   //should be able to make multiline edits
@@ -369,10 +371,10 @@ $(document).ready(function() {
   function buildListMaker(title, display) {
     var title = $('#newListTitle');
     title.html('<h1>My New List</h1>')
-        .one('click', function(e) { fs.ui.inlineEdit(e, title, 'input'); });
+        .bind('click', function(e) { fs.ui.inlineEdit(e, title, 'input'); });
     var desc = $('#newListDescription');
     desc.html('<p>Enter a description here.</p>')
-        .one('click', function(e) { fs.ui.inlineEdit(e, desc, 'textarea'); })
+        .bind('click', function(e) { fs.ui.inlineEdit(e, desc, 'textarea'); })
     $('button').button();
   }
 

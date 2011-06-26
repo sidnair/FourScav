@@ -74,7 +74,7 @@ fs.maps = {
 
 fs.loadListDisplay = function(listId) {
   //an existing list
-  if(fs.userLists[listId]) {
+  if (fs.userLists[listId]) {
     $('#newListMaker').hide();
     $('#activeListTitle').html(fs.userLists[listId].name);
     $('#activeListDescription').html(fs.userLists[listId].desc);
@@ -97,6 +97,14 @@ fs.loadListDisplay = function(listId) {
   }
 };
 
+fs.ui.makeButton = function(text, cb) {
+  var button = $('<button>' + text + '</button>');
+  if (cb) {
+    button.click(cb);
+  }
+  return button;
+};
+
 /*
  * Allows for inline editing.
  *
@@ -106,60 +114,76 @@ fs.loadListDisplay = function(listId) {
  * holderText (optional): text to display when someone clicks on the text to
  * edit.
  *
- * TODO: add cancel and done button
  */
-fs.inlineEdit = function(node, type, holderText) {
+fs.ui.inlineEdit = function(event, node, type, holderText) {
+  function saveEdits() {
+    // if it becomes blank, they can't edit it any more, so do this to prevent
+    // the text from becoming empty
+    if (editableNode.val() === '') {
+      editableNode.val(holderText || originalText);
+    }
+    node.html(originalHtml.replace(originalText, editableNode.val()));
+    restoreInlineListener();
+  }
+
+  function undoEdits() {
+    node.html(originalHtml);
+    restoreInlineListener();
+  }
+
+  function restoreInlineListener() {
+    node.one('click', function(e) { fs.ui.inlineEdit(e, node, type, holderText); });
+  }
+
+  if ($(event.target).is('button')) {
+    restoreInlineListener();
+    return;
+  }
   var originalHtml = node.html(),
       originalText = node.text(),
       editableNode = $('<' + type + '>' + '</' + type + '>');
-  holderText = holderText || originalText;
   editableNode.val(originalText);
   node.html('');
-  node.append(editableNode);
-  //TODO - add cancel button
-  //TODO - add done button
+  node.append(editableNode, '<br />', fs.ui.makeButton('Cancel', undoEdits),
+      fs.ui.makeButton('Done', saveEdits));
   //only add listener for enter to input -- don't add to textarea since they
   //should be able to make multiline edits
-  if(type === 'input') {
+  if (type === 'input') {
     editableNode.keydown(function(e) {
-      if(e.keyCode === 13) {
-        editableNode.blur();
+      //enter
+      if (e.keyCode === 13) {
+        saveEdits();
       }
     });
   }
-  editableNode.blur(function() {
-    //if it becomes blank, they can't edit it any more
-    if(editableNode.val() === '') {
-      editableNode.val(holderText);
-    }
-    node.html(originalHtml.replace(originalText, editableNode.val()));
-    node.remove(type);
-    node.one('click', function() { fs.inlineEdit(node, type, holderText); });
-  });
-  editableNode.focus(function() {
-    if(originalText === holderText) {
+  editableNode.one('focus', function() {
+    if (holderText && originalText === holderText) {
       editableNode.val('');
     }
   });
   editableNode.focus();
 };
 
-fs.inlineHover = function(node) {
+/*
+fs.ui.inlineHover = function(node) {
+  node.addClass('editable');
   var oldColor = node.attr('background') || 'white';
   node.mouseover(function() {
-      $(this).animate({background: 'yellow'}, 'fast');
+      $(this).
+      css({background: '#F7FE2E'});
   });
   node.mouseleave(function() {
-      $(this).animate({background: oldColor }, 'fast');
+      $(this).css({background: oldColor });
   });
 };
+*/
 
 /*
 fs.util = {};
 fs.util.mapToGet = function(obj) {
   var str_arr = ['?'];
-  for(var i in obj) {
-    if(str_arr.length === 1) {
+  for (var i in obj) {
+    if (str_arr.length === 1) {
       str_arr.push([i, '=', obj[i]].join(''));
     } else {
       str_arr.push(['&', i, '=', obj[i]].join(''));
@@ -171,7 +195,8 @@ fs.util.mapToGet = function(obj) {
 
 fs.searchVenue = function(query) {
   //don't proceed if query is undefined, empty, etc
-  if(!query) {
+  if (!query) {
+    fs.ui.displayError('You must enter places');
     return;
   }
   $.get('/venues/search/', {
@@ -183,13 +208,13 @@ fs.searchVenue = function(query) {
     var agg_results = [];
     var k = 0;
     var result = $.parseJSON(data);
-    if(result.response && result.response.groups && result.response.groups[0]) {
+    if (result.response && result.response.groups && result.response.groups[0]) {
       var keys = [0, 1];
-      for(var i in keys) {
+      for (var i in keys) {
         var items = result.response.groups[i] && result.response.groups[i].items;
-        if(items) {
-          for(var j = 0, l = items.length; j < l; j++) {
-            if(k < 6) {
+        if (items) {
+          for (var j = 0, l = items.length; j < l; j++) {
+            if (k < 6) {
               agg_results[k] = items[j];
               k++;
             }
@@ -204,35 +229,35 @@ fs.searchVenue = function(query) {
 fs.renderListPlaces = function(places, list) {
   $('#activeListTable').html('');
   fs.renderResults(places, $('#activeListTable'), true);
- // for(var i = 0, l = places.length; i < l; i++) {
+ // for (var i = 0, l = places.length; i < l; i++) {
    // fs.addMarker(places[i], places[i].lat, elaces[i].lng, places[i].name, places[i].desc);
     //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
 //  }
 };
 
 fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
-  if(!resultListDiv) {
+  if (!resultListDiv) {
     //cache results div
     resultListDiv = $('#searchResults');
     //clear prexisting results
     resultListDiv.html('<table></table>');
   }
-  for(var i = 0, l = result_list.length; i < l; i++) {
+  for (var i = 0, l = result_list.length; i < l; i++) {
     var result = result_list[i];
     var resultDiv = $('<tr class="searchResult"></tr>');
     var addButton = $('<td><span id="' + result.id + 'Button" class="searchButton"></span></td>');
     resultDiv.append(addButton);
     resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
-    for(var j = 0, l2 = result.categories.length; j < l2; j++) {
+    for (var j = 0, l2 = result.categories.length; j < l2; j++) {
       var cat = result.categories[j];
       var icon = cat.icon;
       var name = cat.name;
       resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
     }
       resultListDiv.append(resultDiv);
-    if(!shouldNotAdd) {
+    if (!shouldNotAdd) {
       $('#' + result.id + 'Button').button({
-  icons: {primary:'ui-icon-plusthick'},
+        icons: {primary:'ui-icon-plusthick'},
         text: false
       });
       (function() {
@@ -271,7 +296,7 @@ $(document).ready(function() {
   function addSearchEvents() {
     var runSearch = function() { fs.searchVenue($('#searchBar').val()); };
     $('#searchBar').keydown(function(e) {
-      if(e.keyCode === 13) {
+      if (e.keyCode === 13) {
         runSearch();
       }
     });
@@ -287,7 +312,7 @@ $(document).ready(function() {
           fullId = $('td', element)[1].id
           enteredPlaces.push(fullId);
         });
-        if(enteredPlaces.length === 0) {
+        if (enteredPlaces.length === 0) {
           fs.ui.displayError('You must enter places');
           return;
         }
@@ -297,7 +322,7 @@ $(document).ready(function() {
             tags: [],
             places: enteredPlaces
         };
-        $.post('/list/new', obj, function(data, textStatus, jqXHR) {
+        $.post('/hunts/new', obj, function(data, textStatus, jqXHR) {
             console.log(data);
            //on success, add stuff to list 
         });
@@ -306,7 +331,7 @@ $(document).ready(function() {
           console.log($('td span', element));
           $('td span', element).each(function(i, e) {
             var fullId = e.id;
-            if(fullId && fullId.indexOf('ButtonRemove') > 0) {
+            if (fullId && fullId.indexOf('ButtonRemove') > 0) {
               enteredPlaces.push(fullId.replace('ButtonRemove', ''));
             }
           });
@@ -341,17 +366,13 @@ $(document).ready(function() {
     };
   }
 
-  function buildListCreater(title, display) {
+  function buildListMaker(title, display) {
     var title = $('#newListTitle');
     title.html('<h1>My New List</h1>')
-    //fs.inlineEdit(title, $('#newListMaker'), 'input');
-        .one('click', function() { fs.inlineEdit(title, 'input'); });
-    fs.inlineHover(title);
+        .one('click', function(e) { fs.ui.inlineEdit(e, title, 'input'); });
     var desc = $('#newListDescription');
     desc.html('<p>Enter a description here.</p>')
-    //fs.inlineEdit(desc, $('#newListMaker'), 'input');
-        .one('click', function() { fs.inlineEdit(desc, 'textarea'); })
-    fs.inlineHover(desc);
+        .one('click', function(e) { fs.ui.inlineEdit(e, desc, 'textarea'); })
     $('button').button();
   }
 
@@ -376,7 +397,7 @@ $(document).ready(function() {
 
     var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
     //use html5 geolocation if possible - otherwise, it stays at default of new york
-    if(navigator.geolocation) {
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         fs.maps.userLocation.lat = position.coords.latitude;
         fs.maps.userLocation.lng = position.coords.longitude;
@@ -391,7 +412,7 @@ $(document).ready(function() {
   };
 
   makeListDropDown(fs.userLists);
-  buildListCreater();
+  buildListMaker();
   //load the first list
   fs.loadListDisplay($('#listChoice option')[0].id);
   loadMaps();

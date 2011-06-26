@@ -20,21 +20,23 @@
       </select>
     </div>
     <div id="activeListInfo">
-      <div id="activeListTitle" class="huntTitle"> </div>
-      <div id="activeListDescription" class="huntDesc"> </div>
+      <div id="activeListTitle" class="huntTitle editable"> </div>
+      <div id="activeListDescription" class="huntDesc editable"> </div>
       <div id="activeList">
         <table id="activeListTable"></table>
       </div>
     </div>
     <div id="newListMaker">
-      <div id="newListTitle" class="huntTitle"></div>
-      <div id="newListDescription" class="huntDesc"></div>
+      <div id="newListTitle" class="huntTitle editable"></div>
+      <div id="newListDescription" class="huntDesc editable"></div>
       <br/>
       <div id="newList">
         <table id="newListTable"></table>
       </div>
       <br/>
-      <button id="submitListButton">Submit!</button>
+      <div id="submitListButtonDiv">
+        <button id="submitListButton">Submit!</button>
+      </div>
     </div>
   </div>
 
@@ -42,7 +44,7 @@
 
   <div id="searchAndStandings" class="overlay">
     <div id="search">
-      <h1>Find a Venues</h1>
+      <h1>Find Venues</h1>
       <input id="searchBar"></input>
       <button id="searchButton">Search</button>
       <div id="searchResults"></div>
@@ -55,7 +57,9 @@
   </div>
 
   <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
-  <script src="../js/jquery-1.4.1.js"></script>
+  <!--
+  <script src="../js/jquery-1.4.1.js"></script> -->
+  <script src="../js/jquery-1.6.1.js"></script>
   <script src="../js/jquery-ui-1.8.11.custom.min.js"></script>
   <script src="../js/ui.selectmenu.js"></script> 
   <script src="../js/application.js"></script> 

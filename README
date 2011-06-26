@@ -1,35 +1,50 @@
 Everything is new again, in cherrypy
 
+invites JSON -
+{
+  huntIds: [],
+  userIds: [],
+  emails: []
+}
+
 API:
 	Should send users to https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost:8080/auth/
 	Will auth automatically from there
 
+  GET
 	user/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json
 	     json is structured like:
 	     [list of hunts]
-	
+
+  GET
 	user/?action=name
 		Assumes cookie is set--gets cookie and returns the user information for the user in json
 		json is structured like:
 		{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}
 
+  POST
 	hunts/new
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user
-		
+	
+  GET
 	hunts/?id=[HUNT_ID]&action=get
 		Fetches hunt json
 		{'users':[list of users],'venues':[list of venues], 'title':name,'rankings':[list of rankings], 'owner':userid}
 
+  POST
 	hunts/?id=[HUNT_ID]&action=join
 		assumes cookie, joins owner of cookie to hunt
 
+  POST
 	hunts/?id=[HUNT_ID]&action=remove_place&foursq=[FOURSQ_ID]
 		removes place from a hunt
 
+  POST
 	hunts/?id=[HUNT_ID]&action=add_place&foursq=[FOURSQ_ID]
 		adds a place to a hunt
 
+  GET
 	venues/search/?query=[QUERYSTRING]&lng=[LNG]&lat=[LAT]
 		search foursquare for a query at that longlat and returns a response in json
 		the json format is on the foursquare website

@@ -382,12 +382,27 @@ class Venues(object):
 
     search.exposed = True
 
+class Logout(object):
+    @cherrypy.expose
+    def default(self):
+        ask_cookie = cherrypy.request.cookie
+        if "token" in ask_cookie:
+            tell_cookie = cherrypy.response.cookie
+            tell_cookie['token'] = ask_cookie['token']
+            tell_cookie['token']['expires'] = 0
+            
+        index_t = open('static/index.tmpl', 'r')
+        self.index_template = index_t.read()
+        return str(Template(self.index_template))
+
+
 class Index(object):
     invite = Invite()
     user = User()
     venues = Venues()
     auth = Auth()
     hunts = Hunts()
+    logout = Logout()
     def default(self):
         index_t = open('static/index.tmpl', 'r')
         self.index_template = index_t.read()

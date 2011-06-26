@@ -21,6 +21,10 @@ connection = Connection()
 db = connection['fourscav']
 
 class Auth(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
     def index(self,code=""):
 #        db.authenticate(userID, pwd)
         authDict = {}
@@ -29,13 +33,14 @@ class Auth(object):
         authDict["grant_type"] = "authorization_code"
         authDict["redirect_uri"] = "http://localhost:8080/auth/"
         authDict["code"] = code
+        authDict["v"] = "20110525"
         urlencoding = urllib.urlencode(authDict)
         req = urllib2.urlopen("https://foursquare.com/oauth2/access_token",urlencoding)
         dicty = json.load(req)
         token = dicty["access_token"]
         
         
-        get_user_dict = {"oauth_token":token}
+        get_user_dict = {"oauth_token":token, "v":"20110525"}
         urlencoding = urllib.urlencode(get_user_dict)
         
         req = urllib2.urlopen("https://api.foursquare.com/v2/users/self?"+urlencoding)
@@ -43,7 +48,8 @@ class Auth(object):
         dicty = json.load(req)
 
         userid = dicty["response"]["user"]["id"]
-
+        first_name = dicty["response"]["user"]["firstName"].lower()
+        last_name = dicty["response"]["user"]["lastName"].lower()
         user_collection = db.Users
         
         usr = user_collection.find_one({"userid":userid})
@@ -55,7 +61,19 @@ class Auth(object):
                 user_collection.update({"userid":userid},{"$set":{"token":token}},safe=True)
 
         else:
-            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[]},safe=True)
+            names = []
+            if (first_name):
+                stri = ""
+                for elt in first_name:
+                    stri += elt
+                    names.append(stri)
+                names.append(first_name)
+            if (last_name):
+                stri = ""
+                for elt in last_name:
+                    stri += elt
+                    names.append(stri)
+            user_collection.insert({"json":dicty,"token":token,"userid":userid,"hunts":[],"old_hunts":[],"active_hunts":[],"first":first_name,"last":last_name,"names":names},safe=True)
 
         #set cookie
         cookie = cherrypy.response.cookie
@@ -73,6 +91,25 @@ class Auth(object):
 
 
 class User(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
+    def lookup(self,name=""):
+        if (name):
+            user_collection = db.Users
+            cursor = user_collection.find({"names":{"$all":name.lower().split(" ")}})
+            lst = []
+            for elt in cursor:
+                elt.pop('_id')
+                lst.append(elt)
+            dicty = {"results":lst}
+            return dicty
+        else:
+            return  {'status':'fail', \
+                                   'data':'Empty user name' \
+                                   }
+
     def hunts(self):
         cookie = cherrypy.request.cookie
         token = cookie['token'].value
@@ -253,14 +290,27 @@ class Hunts(object):
     default.exposed = True
 
 class Venues(object):
+<<<<<<< HEAD
     def search(self,query="",lat="40.7",lng="-74"):
+=======
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
+
+    def search(self,query="",lng="40.7",lat="-74"):
+>>>>>>> a318b65f753c592716e8fc7247601f8d8c2bd4d5
         "https://api.foursquare.com/v2/venues/search?ll=40.7,-74&client_id=CLIENT_ID&client_secret=CLIENT_SECRET"
 
         authDict = {}
         authDict["client_id"] = "DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00"
         authDict["client_secret"] = "MOBSNY4L5INCORUP1YPS4W3YYINAKSPWXLFSMZWYZUNNH4AE"
+<<<<<<< HEAD
         authDict["ll"] = str(lng)+","+str(lat)
+=======
+        authDict["ll"] = lat+","+lng
+>>>>>>> a318b65f753c592716e8fc7247601f8d8c2bd4d5
         authDict["query"] = query
+        authDict["v"] = "20110625"
         
         urlencoding = urllib.urlencode(authDict)
         codestr = "https://api.foursquare.com/v2/venues/search?" + urlencoding

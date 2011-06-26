@@ -23,6 +23,10 @@ API:
 		json is structured like:
 		{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}
 
+	user/lookup?name=
+		Can search by any prefix of a name
+		Returns {'results':[array of users]}
+
   POST
 	hunts/new
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user

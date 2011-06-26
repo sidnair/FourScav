@@ -1,7 +1,11 @@
-html { height: 100% }
-body { height: 100%; margin: 0px; padding: 0px }
+html {
+  height: 100%;
+}
 
 body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
   font-family: Tahoma, Geneva, sans-serif;
 }
 
@@ -174,14 +178,32 @@ button {
 }
 
 #searchResults tr {
-  height:50px;
+  height: 50px;
 }
 #newListTable tr {
-  height:50px;
+  height: 50px;
 }
 
 #activeListTable tr {
-  height:50px;
+  height: 50px;
 }
 
+#submitListButtonDiv {
+  text-align: center;
+}
 
+.huntTitle h1 {
+  padding: 0 5px;
+}
+
+.huntDesc p {
+  padding: 0 5px;
+}
+
+.huntDesc p {
+  padding: 0 5px;
+}
+
+.editable:hover {
+  background: #F7FE2E;
+}

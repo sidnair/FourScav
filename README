@@ -64,3 +64,6 @@ API:
 		the json format is on the foursquare website
 		https://developer.foursquare.com/docs/venues/search.html
 
+	logout
+		logs you out, if you were logged in
+		displays index.html page

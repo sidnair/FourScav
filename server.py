@@ -21,11 +21,15 @@ connection = Connection()
 db = connection['fourscav']
 
 class Auth(object):
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
+#    @cherrypy.expose
+#    @cherrypy.tools.json_in()
+#    @cherrypy.tools.json_out()
 
     def index(self,code=""):
+        cookie = cherrypy.request.cookie
+        if "token" in cookie:
+            raise cherrypy.InternalRedirect('../main.html')       
+        
 #        db.authenticate(userID, pwd)
         authDict = {}
         authDict["client_id"] = "DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00"
@@ -84,8 +88,8 @@ class Auth(object):
         cookie['token']['max-age'] = 3600
 
         #do we want to save first name? last name? username?
-        raise cherrypy.InternalRedirect('../main.html')       
-        return dicty["response"]["user"]["firstName"]
+        fp = open('./static/main.html')
+        return fp.read()
 
 
     index.exposed = True
@@ -378,15 +382,35 @@ class Venues(object):
 
     search.exposed = True
 
+class Logout(object):
+    @cherrypy.expose
+    def default(self):
+        ask_cookie = cherrypy.request.cookie
+        if "token" in ask_cookie:
+            tell_cookie = cherrypy.response.cookie
+            tell_cookie['token'] = ask_cookie['token']
+            tell_cookie['token']['expires'] = 0
+            
+        index_t = open('static/index.tmpl', 'r')
+        self.index_template = index_t.read()
+        return str(Template(self.index_template))
+
+
 class Index(object):
     invite = Invite()
     user = User()
     venues = Venues()
     auth = Auth()
     hunts = Hunts()
+    logout = Logout()
     def default(self):
         index_t = open('static/index.tmpl', 'r')
         self.index_template = index_t.read()
+        cookie = cherrypy.request.cookie
+        if "token" in cookie:
+            raise cherrypy.InternalRedirect('./main.html')
+#        else:
+#            return "no cookie"
         return str(Template(self.index_template))
     default.exposed = True
 

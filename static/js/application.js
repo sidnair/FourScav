@@ -2,6 +2,14 @@
 var fs = {};
 fs.userLists = {};
 fs.ui = {};
+fs.util = {};
+
+fs.util.metersToMiles = function(meters) {
+  var miles = meters * 0.000621371192;
+  miles *= 10;
+  miles = Math.round(miles) / 10;
+  return miles;
+};
 
 fs.ui.displayError = function(msg) {
   alert(msg);
@@ -97,12 +105,10 @@ fs.loadListDisplay = function(listId) {
   }
 };
 
-fs.ui.makeButton = function(text, cb) {
-  var button = $('<button>' + text + '</button>');
-  if (cb) {
-    button.click(cb);
-  }
-  return button;
+fs.ui.makeSmallButton = function(text, cb) {
+  return $('<button class="smallButton">' + text + '</button>')
+    .button()
+    .click(cb);
 };
 
 /*
@@ -134,20 +140,18 @@ fs.ui.inlineEdit = function(event, node, type, holderText) {
   function restoreInlineListener() {
     node.one('click', function(e) { fs.ui.inlineEdit(e, node, type, holderText); });
   }
-
-  /*
-  if ($(event.target).is('button')) {
+  var $target = $(event.target);
+  if ($target.is('button') || $target.hasClass('ui-button-text')) {
     restoreInlineListener();
     return;
   }
-  */
   var originalHtml = node.html(),
       originalText = node.text(),
       editableNode = $('<' + type + '>' + '</' + type + '>');
   editableNode.val(originalText);
   node.html('');
-  node.after(editableNode, '<br />', fs.ui.makeButton('Cancel', undoEdits),
-      fs.ui.makeButton('Done', saveEdits));
+  node.append(editableNode, '<br />', fs.ui.makeSmallButton('Cancel', undoEdits),
+      fs.ui.makeSmallButton('Done', saveEdits));
   //only add listener for enter to input -- don't add to textarea since they
   //should be able to make multiline edits
   if (type === 'input') {
@@ -195,10 +199,10 @@ fs.util.mapToGet = function(obj) {
 };
 */
 
-fs.searchVenue = function(query) {
+fs.searchVenue = function(query, cb) {
   //don't proceed if query is undefined, empty, etc
   if (!query) {
-    fs.ui.displayError('You must enter places');
+    fs.ui.displayError('You must enter a query.');
     return;
   }
   $.get('/venues/search/', {
@@ -207,24 +211,9 @@ fs.searchVenue = function(query) {
       lng:fs.maps.userLocation.lng
   }, function(data, textStatus, jqXHR) {
     console.log(data);
-    var agg_results = [];
-    var k = 0;
     var result = $.parseJSON(data);
-    if (result.response && result.response.groups && result.response.groups[0]) {
-      var keys = [0, 1];
-      for (var i in keys) {
-        var items = result.response.groups[i] && result.response.groups[i].items;
-        if (items) {
-          for (var j = 0, l = items.length; j < l; j++) {
-            if (k < 6) {
-              agg_results[k] = items[j];
-              k++;
-            }
-          }
-        }
-      }
-      fs.renderResults(agg_results);
-    }
+    fs.renderResults(result.response && result.response.venues);
+    cb();
   });
 };
 
@@ -237,42 +226,57 @@ fs.renderListPlaces = function(places, list) {
 //  }
 };
 
-fs.renderResults = function(result_list, resultListDiv, shouldNotAdd) {
-  if (!resultListDiv) {
-    //cache results div
-    resultListDiv = $('#searchResults');
-    //clear prexisting results
-    resultListDiv.html('<table></table>');
-  }
-  for (var i = 0, l = result_list.length; i < l; i++) {
-    var result = result_list[i];
-    var resultDiv = $('<tr class="searchResult"></tr>');
-    var addButton = $('<td><span id="' + result.id + 'Button" class="searchButton"></span></td>');
-    resultDiv.append(addButton);
-    resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
-    for (var j = 0, l2 = result.categories.length; j < l2; j++) {
-      var cat = result.categories[j];
-      var icon = cat.icon;
-      var name = cat.name;
-      resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
-    }
-      resultListDiv.append(resultDiv);
-    if (!shouldNotAdd) {
-      $('#' + result.id + 'Button').button({
-        icons: {primary:'ui-icon-plusthick'},
-        text: false
-      });
-      (function() {
-        var clickF = (function(resultDiv) {
-            return function() {
-              fs.addResult(resultDiv, result.id + 'Button');
-            };
-        })(resultDiv);
-        addButton.click(function() {
-            clickF();
+fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
+  resultListDiv = resultListDiv || $('#searchResultsDiv');
+  var resultListTable = $('table', resultListDiv);
+  if(!resultList || resultList.length === 0) {
+    resultListTable.html('<tr><td>No results found.</td></tr>');
+  } else {
+    resultListTable.append($('<tr class="searchResult tableHeading">' +
+        '<td></td>' +
+        '<td>Name</td>' +
+        '<td>Distance</td>' +
+        '</tr>'));
+    var i,
+        resultListLen = resultList.length,
+        j,
+        resultCatLen;
+    for (i = 0; i < resultListLen; i++) {
+      var result = resultList[i],
+          resultDiv = $('<tr class="searchResult"></tr>'),
+          addButton = $('<td><span id="' + result.id + 'Button" class="searchButton"></span></td>'),
+          distance;
+      resultDiv.append(addButton);
+      resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
+      distance = fs.util.metersToMiles(result.location.distance);
+      resultDiv.append($('<td id="' + result.id + 'Distance' +
+            '" class="searchResultText">' + distance + '</td>'));
+      for (j = 0, resultCatLen = result.categories.length; j < resultCatLen;
+          j++) {
+        var cat = result.categories[j],
+            icon = cat.icon,
+            name = cat.name;
+        resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
+      }
+      resultListTable.append(resultDiv);
+      if (!shouldNotAdd) {
+        $('#' + result.id + 'Button').button({
+          icons: {primary:'ui-icon-plusthick'},
+          text: false
         });
-      })();
+        // self-invoking anonymous function here so that it accesses the current
+        // result rather than always accessing the last once (since closures are
+        // by reference)
+        (function(resultDiv, resultId) {
+          addButton.click(function() {
+            fs.addResult(resultDiv, resultId + 'Button')
+          });
+        })(resultDiv, result.id);
+      }
     }
+  }
+  if (!resultListDiv.is(':visible')) {
+    resultListDiv.slideDown('slow');
   }
 };
 
@@ -296,14 +300,36 @@ fs.addResult = function(resultNode, oldId) {
 
 $(document).ready(function() {
   function addSearchEvents() {
-    var runSearch = function() { fs.searchVenue($('#searchBar').val()); };
+    var runSearch = function(query) {
+      lastSearchVal = query || $('#searchBar').val();
+      fs.searchVenue(lastSearchVal, function() {
+        $('#toggleResultsButton').button('enable');
+      });
+    };
+    var lastSearchVal;
+    $('#searchButton').one('click', function(e) {
+      var query = $('#searchBar').val();
+      if (query !== lastSearchVal) {
+        runSearch(query);
+      } else if (!$('#toggleResultsButton').text() == 'Show') {
+        $('#toggleResultsButton').click();
+      }
+    });
     $('#searchBar').keydown(function(e) {
       if (e.keyCode === 13) {
         runSearch();
       }
     });
-    $('#searchButton').click(function(e) {
-      runSearch();
+  }
+
+  function configureToggleResultsButton() {
+    $('#toggleResultsButton').button('disable');
+    $('#toggleResultsButton').click(function() {
+      $('#searchResultsDiv').slideToggle('slow', function() {
+          $('#toggleResultsButton').text() == 'Show' ?
+            $('#toggleResultsButton span').text('Hide') :
+            $('#toggleResultsButton span').text('Show');
+      });
     });
   }
 
@@ -371,10 +397,10 @@ $(document).ready(function() {
   function buildListMaker(title, display) {
     var title = $('#newListTitle');
     title.html('<h1>My New List</h1>')
-        .bind('click', function(e) { fs.ui.inlineEdit(e, title, 'input'); });
+        .one('click', function(e) { fs.ui.inlineEdit(e, title, 'input'); });
     var desc = $('#newListDescription');
     desc.html('<p>Enter a description here.</p>')
-        .bind('click', function(e) { fs.ui.inlineEdit(e, desc, 'textarea'); })
+        .one('click', function(e) { fs.ui.inlineEdit(e, desc, 'textarea'); })
     $('button').button();
   }
 
@@ -420,4 +446,5 @@ $(document).ready(function() {
   loadMaps();
   addSearchEvents();
   addSubmitEvent();
+  configureToggleResultsButton();
 });

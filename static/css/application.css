@@ -54,17 +54,33 @@ body {
 #listBox {
   top: 30px;
   left: 30px;
+  max-width: 450px;
+}
+
+#listBox textarea {
+  max-width: 400px;
 }
 
 #searchAndStandings {
-  padding-top:20px;
-  top:30px;
-  right:85px;
+  padding-top: 20px;
+  top: 30px;
+  right: 85px;
+  width: 500px;
+}
+
+#searchAndStandings .title {
+  text-align: left;
+}
+
+#searchResultsDiv {
+  max-height: 450px;
+  overflow-y: scroll;
+  display: none;
 }
 
 #searchBar {
-  font-size:120%;
-  padding:5px;
+  font-size: 120%;
+  padding: 5px;
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px;
   -khtml-border-radius: 7px;
@@ -148,7 +164,7 @@ body {
 }
 
 #standings {
-  display:none;
+  display: none;
 }
 
 button {
@@ -159,33 +175,48 @@ button {
   padding-left:10px;
 }
 
-.searchResult {
-  padding-bottom:25px;
-}
-
 .searchButton {
   padding-right:5px;
 }
 
-#standings h1, #search h1 {
-  font-size: 25px;
+#search, #standings {
   margin-left: auto;
   margin-right: auto;
-  padding: 0 100px;
+}
+
+#standings h1, #search h1 {
+  font-size: 25px;
   /* foursquare color */
   color: #00c0de;
   padding-bottom: 10px;
 }
 
-#searchResults tr {
-  height: 50px;
+/*
+table, table td, table tr  {
+  border: 1px solid black;
 }
-#newListTable tr {
+*/
+
+.listTable td {
+  vertical-align: middle;
+  padding-right:5px;
+}
+
+.listTable td.catIcon {
+  vertical-align: top;
+}
+
+.listTable tr {
   height: 50px;
 }
 
-#activeListTable tr {
-  height: 50px;
+.listTable .tableHeading {
+  height: auto;
+}
+
+.listTable .tableHeading td {
+  padding: 5px 0;
+  font-weight: bold;
 }
 
 #submitListButtonDiv {
@@ -206,4 +237,15 @@ button {
 
 .editable:hover {
   background: #F7FE2E;
+}
+
+button.disabled {
+  background: black;
+}
+
+.smallButton {
+  width: 65%
+  height: 65%;
+  font-size: 65%;
+  margin-right: 5px;
 }

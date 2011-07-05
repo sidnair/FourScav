@@ -210,7 +210,7 @@ fs.searchVenue = function(query, cb) {
       lat:fs.maps.userLocation.lat,
       lng:fs.maps.userLocation.lng
   }, function(data, textStatus, jqXHR) {
-    console.log(data);
+    // console.log(data);
     var result = $.parseJSON(data);
     fs.renderResults(result.response && result.response.venues);
     cb();
@@ -228,10 +228,12 @@ fs.renderListPlaces = function(places, list) {
 
 fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
   resultListDiv = resultListDiv || $('#searchResultsDiv');
+  resultListDiv.scrollTop(0);
   var resultListTable = $('table', resultListDiv);
   if(!resultList || resultList.length === 0) {
     resultListTable.html('<tr><td>No results found.</td></tr>');
   } else {
+    resultListTable.html(''); // clear any old results
     resultListTable.append($('<tr class="searchResult tableHeading">' +
         '<td></td>' +
         '<td>Name</td>' +
@@ -240,11 +242,19 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
     var i,
         resultListLen = resultList.length,
         j,
-        resultCatLen;
+        resultCatLen,
+        resultIdSet = {};
     for (i = 0; i < resultListLen; i++) {
-      var result = resultList[i],
-          resultDiv = $('<tr class="searchResult"></tr>'),
-          addButton = $('<td><span id="' + result.id + 'Button" class="searchButton"></span></td>'),
+      var result = resultList[i];
+      // skip duplicate results that FourSquare sometimes returns
+      if (resultIdSet[result.id]) {
+        continue;
+      } else {
+        resultIdSet[result.id] = true;
+      }
+      var resultDiv = $('<tr class="searchResult"></tr>'),
+          buttonId = result.id + 'Button',
+          addButton = $('<td><span id="' + buttonId + '" class="searchButton"></span></td>'),
           distance;
       resultDiv.append(addButton);
       resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
@@ -255,25 +265,41 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
           j++) {
         var cat = result.categories[j],
             icon = cat.icon,
-            name = cat.name;
-        resultDiv.append('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
+            name = cat.name,
+            imgTd = $('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
+        resultDiv.append(imgTd);
       }
       resultListTable.append(resultDiv);
       if (!shouldNotAdd) {
-        $('#' + result.id + 'Button').button({
+        $('#' + buttonId).button({
           icons: {primary:'ui-icon-plusthick'},
           text: false
         });
         // self-invoking anonymous function here so that it accesses the current
         // result rather than always accessing the last once (since closures are
         // by reference)
-        (function(resultDiv, resultId) {
+        (function(resultDiv, buttonId) {
           addButton.click(function() {
-            fs.addResult(resultDiv, resultId + 'Button')
+            fs.addResult(resultDiv, buttonId)
           });
-        })(resultDiv, result.id);
+        })(resultDiv, buttonId);
       }
     }
+    $('td img[alt]').qtip(
+    {
+        content: {
+          attr: 'alt' // Use the ALT attribute of the area map for the content
+        },
+        style: {
+          classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
+          widget: true
+        },
+        position: {
+          my: 'left bottom',
+          at: 'right middle'
+        }
+    });
+    console.log( $('td img[alt]') );
   }
   if (!resultListDiv.is(':visible')) {
     resultListDiv.slideDown('slow');

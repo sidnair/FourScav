@@ -249,3 +249,7 @@ button.disabled {
   font-size: 65%;
   margin-right: 5px;
 }
+
+#logoutButton {
+  float: right;
+}

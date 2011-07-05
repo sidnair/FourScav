@@ -106,10 +106,20 @@ fs.loadListDisplay = function(listId) {
 };
 
 fs.ui.makeSmallButton = function(text, cb) {
-  return $('<button class="smallButton">' + text + '</button>')
-    .button()
-    .click(cb);
+  return fs.ui.decorateSmallButton(
+      $('<button>' + text + '</button>'),
+      cb
+  );
 };
+
+fs.ui.decorateSmallButton = function(buttonElement, cb) {
+  buttonElement.addClass('smallButton');
+  buttonElement.button();
+  if (cb) {
+    buttonElement.click(cb);
+  }
+  return buttonElement;
+}
 
 /*
  * Allows for inline editing.
@@ -299,7 +309,6 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
           at: 'right middle'
         }
     });
-    console.log( $('td img[alt]') );
   }
   if (!resultListDiv.is(':visible')) {
     resultListDiv.slideDown('slow');
@@ -325,6 +334,13 @@ fs.addResult = function(resultNode, oldId) {
 
 
 $(document).ready(function() {
+  function renderLogoutButton() {
+    fs.ui.decorateSmallButton($('#logoutButton'),
+      function() {
+        $.get('/logout');
+      });
+  }
+
   function addSearchEvents() {
     var runSearch = function(query) {
       lastSearchVal = query || $('#searchBar').val();
@@ -473,4 +489,5 @@ $(document).ready(function() {
   addSearchEvents();
   addSubmitEvent();
   configureToggleResultsButton();
+  renderLogoutButton();
 });

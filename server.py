@@ -469,6 +469,11 @@ board_conf = \
         {
             'tools.staticfile.on':True,
             'tools.staticfile.filename':'static/main.html'
+            },
+    '/profiles':
+        {
+            'tools.staticfile.on':True,
+            'tools.staticfile.filename':'static/profiles/index.html'
             }
     }
 

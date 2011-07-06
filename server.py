@@ -28,7 +28,7 @@ class Auth(object):
     def index(self,code=""):
         cookie = cherrypy.request.cookie
         if "token" in cookie:
-            raise cherrypy.InternalRedirect('../main.html')       
+            raise cherrypy.InternalRedirect('../main.html')
         
 #        db.authenticate(userID, pwd)
         authDict = {}
@@ -112,7 +112,7 @@ class Invite(object):
                 return email(email_addresses,data["huntIds"])
             else:
                 return  {'status':'fail', \
-                             'data':'No hunt name' \
+                             'message':'No hunt name' \
                              }
         elif "email" in data and data["email"]:
             if "huntid" in data and data["huntid"]:
@@ -121,7 +121,7 @@ class Invite(object):
                 return email(data["email"])
         else:
             return   {'status':'fail', \
-                          'data':'No users or email addresses' \
+                          'message':'No users or email addresses' \
                           }
         return {'status':'ok'}
 
@@ -135,7 +135,7 @@ def email(email_addresses="",huntid=""):
             return message
     else:
         return   {'status':'fail', \
-                          'data':'No email addresses' \
+                          'message':'No email addresses' \
                           }
 
 
@@ -152,11 +152,10 @@ class User(object):
             for elt in cursor:
                 elt.pop('_id')
                 lst.append(elt)
-            dicty = {"results":lst}
-            return dicty
+            return {'status':'ok','data':lst}
         else:
             return  {'status':'fail', \
-                                   'data':'Empty user name' \
+                                   'message':'Empty user name' \
                                    }
 
     def hunts(self):
@@ -174,7 +173,7 @@ class User(object):
             cur_hunt = hunts_collection.find_one({"huntid":hunt[0]})
             huntjson.append(cur_hunt["json"])
 
-        return json.dumps(huntjson)
+        return json.dumps({"status":"ok","data":huntjson})
 
 
     def name(self):
@@ -183,7 +182,7 @@ class User(object):
         user_collection = db.Users
         usr = user_collection.find_one({"token":token})
 
-        return json.dumps(usr["json"])
+        return json.dumps({"status":"ok","data":usr["json"]})
 
     hunts.exposed = True
     name.exposed = True
@@ -202,11 +201,10 @@ class Hunts(object):
             for elt in cursor:
                 elt.pop('_id')
                 lst.append(elt)
-            dicty = {"results":lst}
-            return dicty
+            return {"status":"ok","data":lst}
         else:
             return  {'status':'fail', \
-                                   'data':'Empty hunt name' \
+                                   'message':'Empty hunt name' \
                                    }
     def new(self):
         #this does the json parsing manually
@@ -221,7 +219,7 @@ class Hunts(object):
                 pass
             else:
                 return {'status':'fail', \
-                                       'data':'Please enter all required params', \
+                                       'message':'Please enter all required params', \
                                        'param':val \
                                        }
         tags = []
@@ -251,7 +249,7 @@ class Hunts(object):
             return {'status':'ok',"data":new_hunt}
         except pymongo.errors.OperationFailure:
             return {'status':'fail', \
-                                   'data':'Failed to insert' \
+                                   'message':'Failed to insert' \
                                    }
 
 
@@ -284,7 +282,7 @@ class Hunts(object):
 
 
         return tmp
-    bullshit.exposed = True
+#    bullshit.exposed = True
 
     def default(self,id = "", action = "get", foursq = ""):
         if id == "":
@@ -293,7 +291,7 @@ class Hunts(object):
             #reach into mongo and get the hunt
             hunt_collection = db.Hunts #fetches a collection from mongo
             cur_hunt = hunt_collection.find_one({"_id":id}) #get the specified hunt
-            return json.dumps(str(cur_hunt))
+            return json.dumps({"status":"ok","data":str(cur_hunt)})
         elif action == "join":
             #add member to hunt
             #this entails modifying hunt and member
@@ -323,14 +321,14 @@ class Hunts(object):
 
 
 
-            return "joining hunt"
+            return {"status":"ok","data":"joining hunt"}
 
         #do we even want this functionality?
 
         elif action == "remove_place":
             #reach into mongo and remove place
             if foursq == "":
-                return "need to give me a foursquare id"
+                return {"status":"fail","message":"need to give me a foursquare id"}
 
             cookie = cherrypy.request.cookie
             token = cookie['token'].value
@@ -341,19 +339,19 @@ class Hunts(object):
             hunt_collection = db.Hunts #fetches a collection from mongo
             hunt_collection.update({"_id":id},{"$pull":{"venues":foursq}},safe=True)
             
-            return "removing placing"
+            return {"status":"ok","message":"removing placing"}
         elif action == "add_place":
             #reach into mongo and add place
             if foursq == "":
-                return "need to give me a foursquare id"
+                return {"status":"fail","message":"need to give me a foursquare id"}
 
             hunt_collection = db.Hunts #fetches a collection from mongo
             #inserts a new place in a hunt
             hunt_collection.update({"_id":id},{"$push":{"venues":foursq}},safe=True)
 
-            return "adding place"
+            return {"status":"ok","data":"adding place"}
         else:
-            return "bad action!"
+            return {"status":"fail","message":"bad action!"}
             
         return "tmp"
     default.exposed = True
@@ -378,7 +376,7 @@ class Venues(object):
         codestr = "https://api.foursquare.com/v2/venues/search?" + urlencoding
 
         req = urllib2.urlopen(codestr)
-        return req.read()
+        return {"status":"ok","data":req.read()}
 
     search.exposed = True
 
@@ -408,7 +406,8 @@ class Index(object):
         self.index_template = index_t.read()
         cookie = cherrypy.request.cookie
         if "token" in cookie:
-            raise cherrypy.InternalRedirect('./main.html')
+            fp = open('./static/main.html')
+            return fp.read()
 #        else:
 #            return "no cookie"
         return str(Template(self.index_template))
@@ -464,11 +463,6 @@ board_conf = \
         {
             'tools.staticfile.on':True,
             'tools.staticfile.filename':'static/index.html'
-            },
-    '/main.html':
-        {
-            'tools.staticfile.on':True,
-            'tools.staticfile.filename':'static/main.html'
             },
     '/profiles':
         {

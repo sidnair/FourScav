@@ -23,26 +23,32 @@ API:
 	user/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json
 	     json is structured like:
-	     [list of hunts]
+	     {
+	     status: 'ok',
+	     data:   [list of hunts]
+	     }
 
   GET
-	user/?action=name
+	user/name
 		Assumes cookie is set--gets cookie and returns the user information for the user in json
 		json is structured like:
-		{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}
+		{status: 'ok', 'data':{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}}
 
 	user/lookup?name=
 		Can search by any prefix of a name
-		Returns {'results':[array of users]}
+		Returns {'status':'ok','data':[array of users]}
 
   POST
 	hunts/new
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user
+
+	hunts/lookup?name=
+		same as user/loop?name=
 	
   GET
 	hunts/?id=[HUNT_ID]&action=get
 		Fetches hunt json
-		{'users':[list of users],'venues':[list of venues], 'title':name,'rankings':[list of rankings], 'owner':userid}
+		{'status':'ok','data':{'users':[list of users],'venues':[list of venues], 'title':name,'rankings':[list of rankings], 'owner':userid}}
 
   POST
 	hunts/?id=[HUNT_ID]&action=join
@@ -60,6 +66,8 @@ API:
 	venues/search/?query=[QUERYSTRING]&lng=[LNG]&lat=[LAT]
 		search foursquare for a query at that longlat and returns a response in json
 		the json format is on the foursquare website
+		in form:
+		{'status':'ok','data':json}
 		https://developer.foursquare.com/docs/venues/search.html
 
 	logout

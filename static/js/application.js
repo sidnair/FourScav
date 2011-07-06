@@ -221,9 +221,11 @@ fs.searchVenue = function(query, cb) {
       lat:fs.maps.userLocation.lat,
       lng:fs.maps.userLocation.lng
   }, function(data, textStatus, jqXHR) {
-    // console.log(data);
-    var result = $.parseJSON(data);
-    fs.renderResults(result.response && result.response.venues);
+    console.log(data);
+    var result = $.parseJSON(data),
+        venues = result.data && result.data.response &&
+            result.data.response.venues;
+    fs.renderResults(venues);
     if (cb) {
       cb();
     }

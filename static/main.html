@@ -2,7 +2,7 @@
 <html lang="en">  
 <head>
   <meta charset="utf-8" name="viewport" content="initial-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="../css/custom-theme/jquery-ui-1.8.11.custom.css" type="text/css">
+  <link rel="stylesheet" href="../css/custom-theme/jquery-ui-1.8.14.custom.css" type="text/css">
   <link rel="stylesheet" href="../css/jquery.ui.selectmenu.css" type="text/css">
   <link rel="stylesheet" href="../css/clear.css" type="text/css">
   <link rel="stylesheet" href="../css/jquery.qtip.css" type="text/css">
@@ -43,29 +43,41 @@
 
   <div id="map_canvas"></div>
 
-  <div id="searchAndStandings" class="overlay">
-    <div id="logoutButton">Logout</div>
-    <div id="search">
-      <div id="searchInput">
-        <h1 class="title">Find Venues</h1>
-        <input id="searchBar"></input>
-        <button id="searchButton">Search</button>
-        <button id="toggleResultsButton">Hide</button>
-      </div>
-      <div id="searchResultsDiv">
-        <table id="searchResultsTable" class="listTable"></table>
+  <div id="rightHandPanel" class="overlay">
+    <div id="controlButtonsWrapper">
+      <div id="controlButtons">
+        <div id="toggleRightPanelButton">Hide Panel</div>
+        <div id="logoutButton">Logout</div>
       </div>
     </div>
-    <!--
-    <div id="standings">
-      <h1>Standings</h1>
+    <div id="tabs">
+      <ul id="tabsHeader">
+        <li><a href="#search">Find Venues</a></li>
+        <li><a href="#standings">View Standings</a></li>
+        <li><a href="#invites">Invite Friends</a></li>
+      </ul>
+      <div id="search">
+        <div id="searchInput">
+          <h1 class="title">Find Venues</h1>
+          <input id="searchBar"></input>
+          <button id="searchButton">Search</button>
+        </div>
+        <div id="searchResultsDiv">
+          <table id="searchResultsTable" class="listTable"></table>
+        </div>
+      </div>
+      <div id="standings">
+        <h1>Standings</h1>
+      </div>
+      <div id="invites">
+        <h1>Invite People</h1>
+      </div>
     </div>
-    -->
   </div>
 
   <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
   <script src="../js/jquery-1.6.1.js"></script>
-  <script src="../js/jquery-ui-1.8.11.custom.min.js"></script>
+  <script src="../js/jquery-ui-1.8.14.custom.min.js"></script>
   <script src="../js/ui.selectmenu.js"></script> 
   <script src="../js/jquery.qtip.js"></script> 
   <script src="../js/application.js"></script> 

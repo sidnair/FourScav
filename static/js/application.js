@@ -87,7 +87,8 @@ fs.loadListDisplay = function(listId) {
     $('#activeListTitle').html(fs.userLists[listId].name);
     $('#activeListDescription').html(fs.userLists[listId].desc);
     $('#activeListInfo').show();
-    $('#searchAndStandings').hide();
+    // TODO - check if commenting this out was wrong
+    // $('#rightHandPanel').hide();
     $('#activeListTable').html('');
     /*
     $('#search').hide();
@@ -97,7 +98,7 @@ fs.loadListDisplay = function(listId) {
     //new list
     $('#activeListInfo').hide();
     $('#newListMaker').show();
-    $('#searchAndStandings').show();
+    $('#rightHandPanel').show();
     /*
     $('#standings').hide();
     $('#search').show();
@@ -223,7 +224,9 @@ fs.searchVenue = function(query, cb) {
     // console.log(data);
     var result = $.parseJSON(data);
     fs.renderResults(result.response && result.response.venues);
-    cb();
+    if (cb) {
+      cb();
+    }
   });
 };
 
@@ -344,17 +347,13 @@ $(document).ready(function() {
   function addSearchEvents() {
     var runSearch = function(query) {
       lastSearchVal = query || $('#searchBar').val();
-      fs.searchVenue(lastSearchVal, function() {
-        $('#toggleResultsButton').button('enable');
-      });
+      fs.searchVenue(lastSearchVal);
     };
     var lastSearchVal;
     $('#searchButton').one('click', function(e) {
       var query = $('#searchBar').val();
       if (query !== lastSearchVal) {
         runSearch(query);
-      } else if (!$('#toggleResultsButton').text() == 'Show') {
-        $('#toggleResultsButton').click();
       }
     });
     $('#searchBar').keydown(function(e) {
@@ -364,15 +363,15 @@ $(document).ready(function() {
     });
   }
 
-  function configureToggleResultsButton() {
-    $('#toggleResultsButton').button('disable');
-    $('#toggleResultsButton').click(function() {
-      $('#searchResultsDiv').slideToggle('slow', function() {
-          $('#toggleResultsButton').text() == 'Show' ?
-            $('#toggleResultsButton span').text('Hide') :
-            $('#toggleResultsButton span').text('Show');
-      });
-    });
+  function configureToggleRightPanelButton() {
+    fs.ui.decorateSmallButton($('#toggleRightPanelButton'),
+        function() {
+          $('#tabs').slideToggle('slow', function() {
+            $('#toggleResultsButton').text() == 'Show' ?
+                $('#toggleResultsButton span').text('Hide') :
+                $('#toggleResultsButton span').text('Show');
+          });
+        });
   }
 
   function addSubmitEvent() {
@@ -481,6 +480,10 @@ $(document).ready(function() {
     fs.maps.map = map;
   };
 
+  function initializeTabs() {
+    $('#tabs').tabs();
+  }
+
   makeListDropDown(fs.userLists);
   buildListMaker();
   //load the first list
@@ -488,6 +491,7 @@ $(document).ready(function() {
   loadMaps();
   addSearchEvents();
   addSubmitEvent();
-  configureToggleResultsButton();
+  configureToggleRightPanelButton();
   renderLogoutButton();
+  initializeTabs();
 });

@@ -61,14 +61,13 @@ body {
   max-width: 400px;
 }
 
-#searchAndStandings {
-  padding-top: 20px;
+#rightHandPanel {
   top: 30px;
   right: 85px;
-  width: 500px;
+  width: 510px;
 }
 
-#searchAndStandings .title {
+#rightHandPanel .title {
   text-align: left;
 }
 
@@ -184,7 +183,8 @@ button {
   margin-right: auto;
 }
 
-#standings h1, #search h1 {
+#rightHandPanel h1 {
+/* #standings h1, #search h1 { */
   font-size: 25px;
   /* foursquare color */
   color: #00c0de;
@@ -250,6 +250,10 @@ button.disabled {
   margin-right: 5px;
 }
 
-#logoutButton {
+#controlButtons {
   float: right;
+}
+
+#controlButtonsWrapper {
+  padding-bottom: 35px;
 }

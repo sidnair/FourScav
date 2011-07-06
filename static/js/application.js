@@ -340,7 +340,7 @@ $(document).ready(function() {
   function renderLogoutButton() {
     fs.ui.decorateSmallButton($('#logoutButton'),
       function() {
-        $.get('/logout');
+        window.location.href = '/logout';
       });
   }
 
@@ -366,10 +366,12 @@ $(document).ready(function() {
   function configureToggleRightPanelButton() {
     fs.ui.decorateSmallButton($('#toggleRightPanelButton'),
         function() {
+          $('#toggleRightPanelButton').button('disable');
           $('#tabs').slideToggle('slow', function() {
-            $('#toggleResultsButton').text() == 'Show' ?
-                $('#toggleResultsButton span').text('Hide') :
-                $('#toggleResultsButton span').text('Show');
+            $('#toggleRightPanelButton').text() === 'Show Panel' ?
+                $('#toggleRightPanelButton span').text('Hide Panel') :
+                $('#toggleRightPanelButton span').text('Show Panel');
+            $('#toggleRightPanelButton').button('enable');
           });
         });
   }

@@ -376,7 +376,7 @@ class Venues(object):
         codestr = "https://api.foursquare.com/v2/venues/search?" + urlencoding
 
         req = urllib2.urlopen(codestr)
-        return {"status":"ok","data":req.read()}
+        return {"status":"ok","data": json.load(req)}
 
     search.exposed = True
 

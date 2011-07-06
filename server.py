@@ -173,7 +173,7 @@ class User(object):
             cur_hunt = hunts_collection.find_one({"huntid":hunt[0]})
             huntjson.append(cur_hunt["json"])
 
-        return json.dumps({"status":"ok","data":huntjson})
+        return ({"status":"ok","data":huntjson})
 
 
     def name(self):
@@ -182,7 +182,7 @@ class User(object):
         user_collection = db.Users
         usr = user_collection.find_one({"token":token})
 
-        return json.dumps({"status":"ok","data":usr["json"]})
+        return ({"status":"ok","data":usr["json"]})
 
     hunts.exposed = True
     name.exposed = True
@@ -291,7 +291,7 @@ class Hunts(object):
             #reach into mongo and get the hunt
             hunt_collection = db.Hunts #fetches a collection from mongo
             cur_hunt = hunt_collection.find_one({"_id":id}) #get the specified hunt
-            return json.dumps({"status":"ok","data":str(cur_hunt)})
+            return {"status":"ok","data":str(cur_hunt)}
         elif action == "join":
             #add member to hunt
             #this entails modifying hunt and member

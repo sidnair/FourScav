@@ -220,11 +220,9 @@ fs.searchVenue = function(query, cb) {
       query:query,
       lat:fs.maps.userLocation.lat,
       lng:fs.maps.userLocation.lng
-  }, function(data, textStatus, jqXHR) {
-    console.log(data);
-    var result = $.parseJSON(data),
-        venues = result.data && result.data.response &&
-            result.data.response.venues;
+  }, function(result, textStatus, jqXHR) {
+    var venues = result.data && result.data.response &&
+        result.data.response.venues;
     fs.renderResults(venues);
     if (cb) {
       cb();

@@ -184,6 +184,7 @@ class User(object):
 
         return json.dumps({"status":"ok","data":usr["json"]})
 
+    lookup.exposed = True
     hunts.exposed = True
     name.exposed = True
 

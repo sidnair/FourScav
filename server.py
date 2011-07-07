@@ -395,8 +395,8 @@ class Logout(object):
 
 
 class Index(object):
-    invite = Invite()
-    user = User()
+    invites = Invite()
+    users = User()
     venues = Venues()
     auth = Auth()
     hunts = Hunts()

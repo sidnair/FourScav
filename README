@@ -11,7 +11,7 @@ API:
 	Should send users to https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost:8080/auth/
 	Will auth automatically from there
 
-	invite
+	invites
 		send me json that looks like:
       {
         huntIds: [],
@@ -20,7 +20,7 @@ API:
       }
 
   GET
-	user/?action=hunts
+	users/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json
 	     json is structured like:
 	     {
@@ -29,12 +29,12 @@ API:
 	     }
 
   GET
-	user/name
+	users/name
 		Assumes cookie is set--gets cookie and returns the user information for the user in json
 		json is structured like:
 		{status: 'ok', 'data':{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}}
 
-	user/lookup?name=
+	users/lookup?name=
 		Can search by any prefix of a name
 		Returns {'status':'ok','data':[array of users]}
 
@@ -43,7 +43,7 @@ API:
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user
 
 	hunts/lookup?name=
-		same as user/loop?name=
+		same as users/loop?name=
 	
   GET
 	hunts/?id=[HUNT_ID]&action=get

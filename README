@@ -41,6 +41,8 @@ API:
   POST
 	hunts/new
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user
+		The post must send a json object.  Specifically, the object should be formatted like so:
+		{name:"name",places:[places],desc:"desc"}
 
 	hunts/lookup?name=
 		same as user/lookup?name=

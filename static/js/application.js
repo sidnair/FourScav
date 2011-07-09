@@ -239,6 +239,23 @@ fs.renderListPlaces = function(places, list) {
 //  }
 };
 
+fs.ui.addQTips = function() {
+  $('td img[alt]').qtip(
+  {
+      content: {
+        attr: 'alt' // Use the ALT attribute of the area map for the content
+      },
+      style: {
+        classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
+        widget: true
+      },
+      position: {
+        my: 'left bottom',
+        at: 'right middle'
+      }
+  });
+};
+
 fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
   resultListDiv = resultListDiv || $('#searchResultsDiv');
   resultListDiv.scrollTop(0);
@@ -293,25 +310,12 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
         // by reference)
         (function(resultDiv, buttonId) {
           addButton.click(function() {
-            fs.addResult(resultDiv, buttonId)
+            fs.addResult(resultDiv, buttonId);
           });
         })(resultDiv, buttonId);
       }
     }
-    $('td img[alt]').qtip(
-    {
-        content: {
-          attr: 'alt' // Use the ALT attribute of the area map for the content
-        },
-        style: {
-          classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
-          widget: true
-        },
-        position: {
-          my: 'left bottom',
-          at: 'right middle'
-        }
-    });
+    fs.ui.addQTips();
   }
   if (!resultListDiv.is(':visible')) {
     resultListDiv.slideDown('slow');
@@ -319,20 +323,28 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
 };
 
 fs.addResult = function(resultNode, oldId) {
-  var clonedNode = resultNode.clone();
-  $('#newListTable').append(clonedNode);
-  $($('td', clonedNode)[0]).remove();
-  (function() {
+  function swapPlusWithMinus() {
+    // remove the plus
+    $($('td', clonedNode)[0]).remove();
+    // add a minus
     var removeButton = $('<td><span id="' + oldId + 'Remove" class="searchButton"></span></td>');
-    clonedNode.prepend(removeButton);
     removeButton.button({
-        icons: {primary:'ui-icon-minusthick'},
-        text: false
+      icons: {primary:'ui-icon-minusthick'},
+      text: false
     });
+    clonedNode.prepend(removeButton);
     removeButton.click(function() {
-        clonedNode.remove();
+      clonedNode.remove();
+      resultNode.removeClass('hidden');
     });
-  })();
+    fs.ui.addQTips();
+  }
+
+  var clonedNode = resultNode.clone();
+  // hide the original result
+  resultNode.addClass('hidden');
+  $('#newListTable').append(clonedNode);
+  swapPlusWithMinus();
 };
 
 

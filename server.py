@@ -218,9 +218,9 @@ class Hunts(object):
                 pass
             else:
                 return {'status':'fail', \
-                                       'message':'Please enter all required params', \
-                                       'param':val \
-                                       }
+                       'message':'Please enter all required params', \
+                       'param':val \
+                       }
         tags = []
         name = data['name']
         places = data['places']

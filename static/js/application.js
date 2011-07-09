@@ -387,16 +387,30 @@ $(document).ready(function() {
           fs.ui.displayError('You must enter places');
           return;
         }
-        var obj = {
+        var obj = JSON.stringify({
+          json: {
             name: $('#newListTitle').text(),
             desc: $('#newListDescription').text(),
             tags: [],
             places: enteredPlaces
-        };
+          }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/hunts/new',
+            data: obj,
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(data) {
+              console.log(data);
+            }
+        });
+        /*
         $.post('/hunts/new', obj, function(data, textStatus, jqXHR) {
             console.log(data);
            //on success, add stuff to list 
         });
+        */
         /*
         $('#newListTable tr').each(function(index, element) {
           console.log($('td span', element));

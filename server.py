@@ -189,11 +189,6 @@ class User(object):
     name.exposed = True
 
 class Hunts(object):
-    @cherrypy.expose
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-
-
     def lookup(self,name=""):
         if (name):
             hunt_collection = db.Hunts
@@ -207,6 +202,9 @@ class Hunts(object):
             return  {'status':'fail', \
                                    'message':'Empty hunt name' \
                                    }
+    @cherrypy.expose
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def new(self):
         #this does the json parsing manually
         #cl = cherrypy.request.headers['Content-Length']
@@ -252,38 +250,6 @@ class Hunts(object):
             return {'status':'fail', \
                                    'message':'Failed to insert' \
                                    }
-
-
-    new.exposed = True
-
-    def bullshit(self):
-        tmp = '''
-<html> <head><title>Sup</title></head>
-<body>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-        <script>
-            var obj = JSON.stringify({
-                name: "Title",
-                desc: "Description",
-                tags:[],
-                places:['id1', 'id2']
-            });
-            $.ajax({
-                type: 'POST',
-                url: '/hunts/new',
-                data: obj,
-                success: function(data) { console.log(data); },
-                contentType:"application/json; charset=utf-8",
-                dataType:"json"
-            });
-        </script>
-</body>
-</html>
-        '''
-
-
-        return tmp
-#    bullshit.exposed = True
 
     def default(self,id = "", action = "get", foursq = ""):
         if id == "":

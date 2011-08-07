@@ -257,3 +257,7 @@ button.disabled {
 #controlButtonsWrapper {
   padding-bottom: 35px;
 }
+
+.hidden {
+  display: none;
+}

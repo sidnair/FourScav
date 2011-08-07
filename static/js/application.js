@@ -220,11 +220,9 @@ fs.searchVenue = function(query, cb) {
       query:query,
       lat:fs.maps.userLocation.lat,
       lng:fs.maps.userLocation.lng
-  }, function(data, textStatus, jqXHR) {
-    console.log(data);
-    var result = $.parseJSON(data),
-        venues = result.data && result.data.response &&
-            result.data.response.venues;
+  }, function(result, textStatus, jqXHR) {
+    var venues = result.data && result.data.response &&
+        result.data.response.venues;
     fs.renderResults(venues);
     if (cb) {
       cb();
@@ -239,6 +237,23 @@ fs.renderListPlaces = function(places, list) {
    // fs.addMarker(places[i], places[i].lat, elaces[i].lng, places[i].name, places[i].desc);
     //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
 //  }
+};
+
+fs.ui.addQTips = function() {
+  $('td img[alt]').qtip(
+  {
+      content: {
+        attr: 'alt' // Use the ALT attribute of the area map for the content
+      },
+      style: {
+        classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
+        widget: true
+      },
+      position: {
+        my: 'left bottom',
+        at: 'right middle'
+      }
+  });
 };
 
 fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
@@ -295,25 +310,12 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
         // by reference)
         (function(resultDiv, buttonId) {
           addButton.click(function() {
-            fs.addResult(resultDiv, buttonId)
+            fs.addResult(resultDiv, buttonId);
           });
         })(resultDiv, buttonId);
       }
     }
-    $('td img[alt]').qtip(
-    {
-        content: {
-          attr: 'alt' // Use the ALT attribute of the area map for the content
-        },
-        style: {
-          classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
-          widget: true
-        },
-        position: {
-          my: 'left bottom',
-          at: 'right middle'
-        }
-    });
+    fs.ui.addQTips();
   }
   if (!resultListDiv.is(':visible')) {
     resultListDiv.slideDown('slow');
@@ -321,20 +323,28 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
 };
 
 fs.addResult = function(resultNode, oldId) {
-  var clonedNode = resultNode.clone();
-  $('#newListTable').append(clonedNode);
-  $($('td', clonedNode)[0]).remove();
-  (function() {
+  function swapPlusWithMinus() {
+    // remove the plus
+    $($('td', clonedNode)[0]).remove();
+    // add a minus
     var removeButton = $('<td><span id="' + oldId + 'Remove" class="searchButton"></span></td>');
-    clonedNode.prepend(removeButton);
     removeButton.button({
-        icons: {primary:'ui-icon-minusthick'},
-        text: false
+      icons: {primary:'ui-icon-minusthick'},
+      text: false
     });
+    clonedNode.prepend(removeButton);
     removeButton.click(function() {
-        clonedNode.remove();
+      clonedNode.remove();
+      resultNode.removeClass('hidden');
     });
-  })();
+    fs.ui.addQTips();
+  }
+
+  var clonedNode = resultNode.clone();
+  // hide the original result
+  resultNode.addClass('hidden');
+  $('#newListTable').append(clonedNode);
+  swapPlusWithMinus();
 };
 
 
@@ -389,27 +399,22 @@ $(document).ready(function() {
           fs.ui.displayError('You must enter places');
           return;
         }
-        var obj = {
-            name: $('#newListTitle').text(),
-            desc: $('#newListDescription').text(),
-            tags: [],
-            places: enteredPlaces
-        };
-        $.post('/hunts/new', obj, function(data, textStatus, jqXHR) {
-            console.log(data);
-           //on success, add stuff to list 
+        var dataObj = JSON.stringify({
+          name: $('#newListTitle').text(),
+          desc: $('#newListDescription').text(),
+          tags: [],
+          places: enteredPlaces
         });
-        /*
-        $('#newListTable tr').each(function(index, element) {
-          console.log($('td span', element));
-          $('td span', element).each(function(i, e) {
-            var fullId = e.id;
-            if (fullId && fullId.indexOf('ButtonRemove') > 0) {
-              enteredPlaces.push(fullId.replace('ButtonRemove', ''));
+        $.ajax({
+            type: 'POST',
+            url: '/hunts/new',
+            data: dataObj,
+            contentType:"application/json; charset=utf-8",
+            dataType:"json",
+            success: function(data) {
+              console.log(data);
             }
-          });
         });
-        */
     });
   }
 

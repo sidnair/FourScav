@@ -45,7 +45,7 @@ API:
 		{name:"name",places:[places],desc:"desc"}
 
 	hunts/lookup?name=
-		same as users/lookup?name=
+		same as user/lookup?name=
 	
   GET
 	hunts/?id=[HUNT_ID]&action=get

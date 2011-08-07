@@ -25,7 +25,7 @@ API:
 	     json is structured like:
 	     {
 	     status: 'ok',
-	     data:   [list of hunts]
+	     data:   [list of huntIds]
 	     }
 
   GET
@@ -36,7 +36,7 @@ API:
 
 	users/lookup?name=
 		Can search by any prefix of a name
-		Returns {'status':'ok','data':[array of users]}
+		Returns {'status':'ok','data':[array of rich user data]}
 
   POST
 	hunts/new
@@ -45,12 +45,12 @@ API:
 		{name:"name",places:[places],desc:"desc"}
 
 	hunts/lookup?name=
-		same as users/loop?name=
+		same as users/lookup?name=
 	
   GET
 	hunts/?id=[HUNT_ID]&action=get
 		Fetches hunt json
-		{'status':'ok','data':{'users':[list of users],'venues':[list of venues], 'title':name,'rankings':[list of rankings], 'owner':userid}}
+		{'status':'ok','data':{'users':[userIds],'venues':[venueIds], 'title':name,'rankings':[list of rankings], 'owner':userid}}
 
   POST
 	hunts/?id=[HUNT_ID]&action=join
@@ -69,7 +69,7 @@ API:
 		search foursquare for a query at that longlat and returns a response in json
 		the json format is on the foursquare website
 		in form:
-		{'status':'ok','data':json}
+		{'status':'ok','data':(foursquare json is returned directly)}
 		https://developer.foursquare.com/docs/venues/search.html
 
 	logout

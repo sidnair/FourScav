@@ -122,6 +122,44 @@ fs.ui.decorateSmallButton = function(buttonElement, cb) {
   return buttonElement;
 }
 
+// type: plus or minus
+fs.ui.addButton = function(elem, type) {
+  var primary = type === fs.ui.addButton.Types.PLUS ? 
+      'ui-icon-plusthick' : 'ui-icon-minusthick';
+  elem.button({
+    icons: { primary: primary },
+    text: false
+  });
+};
+
+fs.ui.addButton.Types = {
+  PLUS: 'plus',
+  MINUS: 'minus'
+};
+
+fs.ui.addQTips = function() {
+  $('td img[alt]').qtip(
+  {
+      content: {
+        attr: 'alt' // Use the ALT attribute of the area map for the content
+      },
+      style: {
+        classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
+        widget: true
+      },
+      position: {
+        my: 'left bottom',
+        at: 'right middle'
+      }
+  });
+};
+
+fs.ui.addMapMarkerListener = function(elem) {
+  elem.hover(function() {
+    elem.addClass('highlight')
+  });
+};
+
 /*
  * Allows for inline editing.
  *
@@ -216,17 +254,26 @@ fs.searchVenue = function(query, cb) {
     fs.ui.displayError('You must enter a query.');
     return;
   }
-  $.get('/venues/search/', {
-      query:query,
-      lat:fs.maps.userLocation.lat,
-      lng:fs.maps.userLocation.lng
-  }, function(result, textStatus, jqXHR) {
-    var venues = result.data && result.data.response &&
-        result.data.response.venues;
-    fs.renderResults(venues);
+  cbWrapper = function() {
     if (cb) {
       cb();
     }
+  };
+  $.ajax({
+    url: '/venues/search/',
+    type: 'GET',
+    data: {
+          query:query,
+          lat:fs.maps.userLocation.lat,
+          lng:fs.maps.userLocation.lng
+    },
+    success: function(result, textStatus, jqXHR) {
+      var venues = result.data && result.data.response &&
+          result.data.response.venues;
+      fs.renderResults(venues);
+      cbWrapper();
+    },
+    failure: cbWrapper
   });
 };
 
@@ -237,23 +284,6 @@ fs.renderListPlaces = function(places, list) {
    // fs.addMarker(places[i], places[i].lat, elaces[i].lng, places[i].name, places[i].desc);
     //fs.addMarker(places[i], places[i].location.lat, places[i].location.lng, list);
 //  }
-};
-
-fs.ui.addQTips = function() {
-  $('td img[alt]').qtip(
-  {
-      content: {
-        attr: 'alt' // Use the ALT attribute of the area map for the content
-      },
-      style: {
-        classes: 'ui-tooltip-tipsy ui-tooltip-shadow',
-        widget: true
-      },
-      position: {
-        my: 'left bottom',
-        at: 'right middle'
-      }
-  });
 };
 
 fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
@@ -282,14 +312,14 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
       } else {
         resultIdSet[result.id] = true;
       }
-      var resultDiv = $('<tr class="searchResult"></tr>'),
+      var resultRow = $('<tr class="searchResult"></tr>'),
           buttonId = result.id + 'Button',
           addButton = $('<td><span id="' + buttonId + '" class="searchButton"></span></td>'),
           distance;
-      resultDiv.append(addButton);
-      resultDiv.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
+      resultRow.append(addButton);
+      resultRow.append($('<td id="' + result.id + '" class="searchResultText">' + result.name + '</td>'));
       distance = fs.util.metersToMiles(result.location.distance);
-      resultDiv.append($('<td id="' + result.id + 'Distance' +
+      resultRow.append($('<td id="' + result.id + 'Distance' +
             '" class="searchResultText">' + distance + '</td>'));
       for (j = 0, resultCatLen = result.categories.length; j < resultCatLen;
           j++) {
@@ -297,27 +327,25 @@ fs.renderResults = function(resultList, resultListDiv, shouldNotAdd) {
             icon = cat.icon,
             name = cat.name,
             imgTd = $('<td><img src="' + icon + '" alt="' + name + '" class="catIcon" /></td>');
-        resultDiv.append(imgTd);
+        resultRow.append(imgTd);
       }
-      resultListTable.append(resultDiv);
+      fs.ui.addMapMarkerListener(resultRow);
+      resultListTable.append(resultRow);
       if (!shouldNotAdd) {
-        $('#' + buttonId).button({
-          icons: {primary:'ui-icon-plusthick'},
-          text: false
-        });
+        fs.ui.addButton($('#' + buttonId), fs.ui.addButton.Types.PLUS);
         // self-invoking anonymous function here so that it accesses the current
         // result rather than always accessing the last once (since closures are
         // by reference)
-        (function(resultDiv, buttonId) {
+        (function(resultRow, buttonId) {
           addButton.click(function() {
-            fs.addResult(resultDiv, buttonId);
+            fs.addResult(resultRow, buttonId);
           });
-        })(resultDiv, buttonId);
+        })(resultRow, buttonId);
       }
     }
     fs.ui.addQTips();
   }
-  if (!resultListDiv.is(':visible')) {
+if (!resultListDiv.is(':visible')) {
     resultListDiv.slideDown('slow');
   }
 };
@@ -327,12 +355,10 @@ fs.addResult = function(resultNode, oldId) {
     // remove the plus
     $($('td', clonedNode)[0]).remove();
     // add a minus
-    var removeButton = $('<td><span id="' + oldId + 'Remove" class="searchButton"></span></td>');
-    removeButton.button({
-      icons: {primary:'ui-icon-minusthick'},
-      text: false
-    });
+    var newId = oldId + 'Remove';
+    var removeButton = $('<td><span id="' + newId + '" class="searchButton"></span></td>');
     clonedNode.prepend(removeButton);
+    fs.ui.addButton($('#' + newId), fs.ui.addButton.Types.MINUS);
     removeButton.click(function() {
       clonedNode.remove();
       resultNode.removeClass('hidden');
@@ -357,17 +383,19 @@ $(document).ready(function() {
   }
 
   function addSearchEvents() {
-    var runSearch = function(query) {
-      lastSearchVal = query || $('#searchBar').val();
-      fs.searchVenue(lastSearchVal);
+    function runSearch() {
+      var query = $('#searchBar').val();
+      if (query === lastSearchVal) {
+        return;
+      }
+      $('#searchButton').button('disable');
+      lastSearchVal = query;
+      fs.searchVenue(query, function() {
+        $('#searchButton').button('enable');
+      });
     };
     var lastSearchVal;
-    $('#searchButton').one('click', function(e) {
-      var query = $('#searchBar').val();
-      if (query !== lastSearchVal) {
-        runSearch(query);
-      }
-    });
+    $('#searchButton').click(runSearch);
     $('#searchBar').keydown(function(e) {
       if (e.keyCode === 13) {
         runSearch();

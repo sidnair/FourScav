@@ -11,7 +11,7 @@ API:
 	Should send users to https://foursquare.com/oauth2/authenticate?client_id=DQCCND5KOFCIYVQXB3QX4GHJAR4AH4OHTQAM21JD0OFY4J00&response_type=code&redirect_uri=http://localhost:8080/auth/
 	Will auth automatically from there
 
-	invites
+	POST invites
 		send me json that looks like:
       {
         huntIds: [],
@@ -19,59 +19,51 @@ API:
         emails: []
       }
 
-  GET
-	users/?action=hunts
+  GET users/?action=hunts
 	     Assumes cookie is set--gets cookie and returns the hunts for a user in json
 	     json is structured like:
 	     {
-	     status: 'ok',
-	     data:   [list of huntIds]
+         status: 'ok',
+         data:   [list of huntIds]
 	     }
 
-  GET
-	users/name
+  GET users/name
 		Assumes cookie is set--gets cookie and returns the user information for the user in json
 		json is structured like:
-		{status: 'ok', 'data':{'userid':userid,'token':token,'json':foursquare json info on user,"hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}}
+		{status: 'ok', 'data':{'userid':userid,'token':token,'json':foursquareJSON, "hunts":[hunts list],"old_hunts":[old hunts list],"active_hunts":[active hunts list]}}
 
-	users/lookup?name=
+	GET users/lookup?name=
 		Can search by any prefix of a name
 		Returns {'status':'ok','data':[array of rich user data]}
 
-  POST
-	hunts/new
+  POST hunts/new
 		Assumes	cookie is set--gets cookie and sets up a new hunt for the user
 		The post must send a json object.  Specifically, the object should be formatted like so:
 		{name:"name",places:[places],desc:"desc"}
 
-	hunts/lookup?name=
+	GET hunts/lookup?name=
 		same as user/lookup?name=
 	
-  GET
-	hunts/?id=[HUNT_ID]&action=get
+  GET hunts/?id=[HUNT_ID]&action=get
 		Fetches hunt json
 		{'status':'ok','data':{'users':[userIds],'venues':[venueIds], 'title':name,'rankings':[list of rankings], 'owner':userid}}
 
-  POST
-	hunts/?id=[HUNT_ID]&action=join
+  POST hunts/?id=[HUNT_ID]&action=join
 		assumes cookie, joins owner of cookie to hunt
 
-  POST
-	hunts/?id=[HUNT_ID]&action=remove_place&foursq=[FOURSQ_ID]
+  POST hunts/?id=[HUNT_ID]&action=remove_place&foursq=[FOURSQ_ID]
 		removes place from a hunt
 
-  POST
-	hunts/?id=[HUNT_ID]&action=add_place&foursq=[FOURSQ_ID]
+  POST hunts/?id=[HUNT_ID]&action=add_place&foursq=[FOURSQ_ID]
 		adds a place to a hunt
 
-  GET
-	venues/search/?query=[QUERYSTRING]&lng=[LNG]&lat=[LAT]
+  GET venues/search/?query=[QUERYSTRING]&lng=[LNG]&lat=[LAT]
 		search foursquare for a query at that longlat and returns a response in json
 		the json format is on the foursquare website
 		in form:
 		{'status':'ok','data':(foursquare json is returned directly)}
 		https://developer.foursquare.com/docs/venues/search.html
 
-	logout
+	GET logout
 		logs you out, if you were logged in
 		displays index.html page

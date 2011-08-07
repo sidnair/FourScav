@@ -261,3 +261,7 @@ button.disabled {
 .hidden {
   display: none;
 }
+
+.highlight {
+  background: #F7FE2E;
+}

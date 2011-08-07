@@ -131,7 +131,7 @@ def email(email_addresses="",huntid=""):
             message = "Someone has invited you to a game!" + huntid
             return message
         else:
-            message = "Would you like to join fourscav?  It's awesome!"
+            message = "Would you like to join FourScav?  It's awesome!"
             return message
     else:
         return   {'status':'fail', \
